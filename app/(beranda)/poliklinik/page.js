@@ -1,11 +1,11 @@
 "use client";
+
+import React, { useState } from "react";
 import { LoadingPage } from "@/components/loading";
 import { Search } from "@/components/search";
 import { CaretLeft } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
-// import data from '@/service/data.json'
 import Avatar from "@/public/assets/images/information.png";
 import { UseGetPoly } from "@/service/pendukung.service";
 import Offline from "@/components/offline";
@@ -15,11 +15,10 @@ const Poliklinik = () => {
   const { data, isLoading } = UseGetPoly();
 
   const filterData = () => {
-    return data?.data.filter((item) => {
-      return item.nama_departemen.toLowerCase().includes(search.toLowerCase());
-    });
+    return data?.data?.filter((item) =>
+      item.nama_departemen.toLowerCase().includes(search.toLowerCase())
+    );
   };
-  console.log(data?.data);
 
   const saveDepartmentToLocalStorage = (id, name) => {
     localStorage.setItem("selectedDepartmentId", id);
@@ -37,11 +36,11 @@ const Poliklinik = () => {
       <div className="px-2">
         <section className="mt-5">
           <Link
-            href={"/home"}
+            href="/home"
             className="flex items-center p-1 font-medium text-lg gap-1 text-white"
           >
             <CaretLeft size={18} weight="bold" />
-            <div className="">Poliklinik</div>
+            <div>Poliklinik</div>
           </Link>
         </section>
         <section className="m-2 mt-4">
@@ -73,16 +72,15 @@ const Poliklinik = () => {
                   <div className="flex w-full h-[156px] p-2 bg-white/20 rounded-[5px] items-center justify-center border-[2px]">
                     <div className="flex flex-col items-center">
                       <Image
-                        src={item.gambar ? `${item.gambar}` : Avatar}
+                        src={item.gambar || Avatar}
                         alt="Logo Poliklinik"
                         loading="eager"
                         height={80}
                         width={80}
-                        className=""
                       />
                       <div className="mt-2 text-center text-sm font-medium text-zinc-900">
                         <span className="capitalize">
-                          {(item?.nama_departemen).toLowerCase()}
+                          {item?.nama_departemen.toLowerCase()}
                         </span>
                       </div>
                     </div>
