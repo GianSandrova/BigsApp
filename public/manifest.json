@@ -1,0 +1,60 @@
+{
+  "short_name": "BIGS APP",
+  "name": "BIGS APP",
+  "description": "BIGS APP untuk Doctor Appointment",
+  "icons": [
+    {
+      "src": "/icons/icon-36x36.png",
+      "types": "image/png",
+      "sizes": "36x36"
+    },
+    {
+      "src": "/icons/icon-48x48.png",
+      "types": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "/icons/icon-72x72.png",
+      "types": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "types": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "types": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "types": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "types": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icons/icon-chrome-512x512.png",
+      "types": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icons/maskable.png",
+      "types": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [],
+  "start_url": ".",
+  "background_color": "#ffff",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#0000",
+  "orientation": "portrait"
+}

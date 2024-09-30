@@ -1,0 +1,495 @@
+import { api } from "@/lib/axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { authHeader } from "@/lib";
+
+export const UseAllProfile = () => {
+  const username = localStorage.getItem("username");
+  const token_core = localStorage.getItem("token");
+
+  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+
+  return useQuery({
+    queryKey: ["all-profile", username, cleanTokenCore],
+    queryFn: async () => {
+      try {
+        const response = await api.post("profile/get-all", {
+          username: username,
+          token_core: cleanTokenCore,
+        });
+        if (!response.data.success) {
+          throw new Error(response.data.message);
+        }
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        throw error;
+      }
+    },
+  });
+};
+
+export const usePendingApproval = () => {
+  const username = localStorage.getItem("username");
+  const token_core = localStorage.getItem("token");
+
+  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+
+  return useQuery({
+    queryKey: ["PendingApproval", username, cleanTokenCore],
+    queryFn: async () => {
+      try {
+        const response = await api.post("profile/get-all/pending-approval", {
+          username: username,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${cleanTokenCore}`,
+          },
+        }
+      );
+        // Sesuaikan pengecekan dengan respons API
+        if (response.data.code !== 200) {
+          // Ganti dengan pengecekan yang sesuai
+          throw new Error(response.data.message);
+        }
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        throw error;
+      }
+    },
+  });
+};
+
+export const UseDetailProfile = (id) => {
+  const username = localStorage.getItem("username");
+  const token_core = localStorage.getItem("token");
+
+  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+
+  return useQuery({
+    queryKey: ["detail-profile", id, username, cleanTokenCore],
+    queryFn: async () => {
+      if (!id) {
+        throw new Error("Profile ID is required");
+      }
+      if (!username) {
+        throw new Error("Authentication data is missing");
+      }
+      try {
+        const response = await api.post(`profile/get-by-id?id=${id}`, {
+          username: username,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${cleanTokenCore}`,
+          },
+        }
+      );
+        if (!response.data || response.data.code !== 200) {
+          throw new Error(
+            response.data?.message || "Failed to fetch profile data"
+          );
+        }
+        return response.data.data; // Langsung mengembalikan data profil
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        throw new Error(
+          error.response?.data?.message ||
+            error.message ||
+            "An error occurred while fetching the profile"
+        );
+      }
+    },
+  });
+};
+
+export const UseGetProfileByFaskes = () => {
+  const username = localStorage.getItem("username");
+  const token_core = localStorage.getItem("token");
+  const id_faskes = localStorage.getItem("selectedFaskesId");
+  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+
+  return useQuery({
+    queryKey: ["Profil-By-Faskes", username, cleanTokenCore, id_faskes],
+    queryFn: async () => {
+      try {
+        const response = await api.post(
+          `profile/get-by-faskes?faskes_id=${id_faskes}`,
+          {
+            username: username,
+          },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
+
+        // Check if the response is successful based on the code
+        if (response.data.code !== 200) {
+          throw new Error(response.data.message || "Failed to fetch profiles");
+        }
+
+        console.log("Response:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        throw error;
+      }
+    },
+  });
+};
+
+// jadi ini tu buat ngecek pas ditambahin pasiennya ada apa engga kalo ada dia bakal
+// nampilin datanya tapi kalo engga dia bakalan nampilin NIK tidak terdaftar pada klinik'
+// ini tu didapetin dari fucntion actionCekPasien - Core
+// export const UseGetProfilePasienByNik = ({ onSuccess, onError }) => {
+//     return useMutation({
+//         mutationFn: async (body) => {
+//             const user = await api.post("profile/get-by-nik?nik=617171", body, {
+//                 headers: authHeader(),
+//             });
+//             return user.data;
+//         },
+//         onSuccess,
+//         onError
+//     });
+// };
+
+export const UseGetProfilePasienByNik = (nik, type) => {
+  const username = localStorage.getItem("username");
+  const token_core = localStorage.getItem("token");
+  const id_faskes = JSON.parse(localStorage.getItem("selectedFaskesId"));
+
+  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+
+  return useQuery({
+    queryKey: ["get-by-nik", nik, type, username, cleanTokenCore],
+    queryFn: async () => {
+      try {
+        const response = await api.post(
+          `profile/tautkan/cari-pasien?nik=${nik}&type=${type}`,
+          {
+            faskes_id: id_faskes,
+            username: username,
+            token_core: cleanTokenCore,
+          },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
+        if (!response.data.success) {
+          throw new Error(response.data.message);
+        }
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        throw error;
+      }
+    },
+    enabled: !!nik,
+  });
+};
+
+export const UsePostProfilePasien = (nik, type, options = {}) => {
+  const id_faskes = localStorage.getItem("selectedFaskesId");
+  const token_core = localStorage.getItem("token");
+  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+
+  return useMutation({
+    mutationFn: async () => {
+      try {
+        const body = {
+          faskes_id: id_faskes,
+          nik: nik,
+          type: type,
+          token_core: cleanTokenCore,
+        };
+
+        const response = await api.post("profile/tautkan", body,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
+
+        if (response.data && response.data.success) {
+          return response.data;
+        } else {
+          throw new Error(
+            response.data.message || "Gagal menambahkan profil pasien"
+          );
+        }
+      } catch (error) {
+        throw (
+          error.response?.data ||
+          error.message ||
+          "Terjadi kesalahan saat menambahkan profil pasien"
+        );
+      }
+    },
+    onSuccess: (data) => {
+      if (options.onSuccess) {
+        options.onSuccess(data);
+      }
+    },
+    onError: (error) => {
+      if (options.onError) {
+        options.onError(error);
+      }
+    },
+  });
+};
+
+export const useCheckStatusPasien = (nik) => {
+  const username = localStorage.getItem("username");
+  const token_core = localStorage.getItem("token");
+  const faskes_id = localStorage.getItem("selectedFaskesId");
+
+  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+
+  return useQuery({
+    queryKey: ["check-status-pasien", nik, faskes_id, username, cleanTokenCore],
+    queryFn: async () => {
+      try {
+        const response = await api.post("profile/tautkan/check-status-pasien", {
+          faskes_id: faskes_id,
+          nik: nik,
+          username: username,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${cleanTokenCore}`,
+          },
+        }
+      );
+
+        if (!response.data.success) {
+          throw new Error(
+            response.data.data.message || "Error checking patient status"
+          );
+        }
+
+        return response.data.data;
+      } catch (error) {
+        console.error("Error checking patient status:", error);
+        throw error;
+      }
+    },
+    enabled: !!nik && !!faskes_id && !!username && !!cleanTokenCore,
+  });
+};
+
+export const useTambahPasienBaru = (options = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (patientData) => {
+      const faskesId = localStorage.getItem("selectedFaskesId");
+      const token_core = localStorage.getItem("token");
+      const cleanTokenCore = token_core
+        ? token_core.replace(/^"|"$/g, "")
+        : null;
+
+      const payload = {
+        faskes_id: faskesId,
+        nik: patientData.nik,
+        nama_lengkap: patientData.nama_lengkap,
+        jenis_kelamin: patientData.jenis_kelamin,
+        tempat_lahir: patientData.tempat_lahir,
+        tanggal_lahir: patientData.tanggal_lahir,
+        alamat: patientData.alamat,
+        ktp: patientData.ktp,
+      };
+
+      try {
+        const response = await api.post(
+          "profile/tautkan/tambah-pasien-baru",
+          payload,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
+
+        console.log("testing gila" + response.data);
+
+        if (response.data.error) {
+          throw new Error(
+            response.data.details.metadata.message ||
+              "Failed to add new patient"
+          );
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error("Error adding new patient:", error);
+        throw error;
+      }
+    },
+    onSuccess: (data) => {
+      console.log("Add patient success:", data);
+      queryClient.invalidateQueries("patients"); // Adjust this to your query key
+      if (options.onSuccess) {
+        options.onSuccess(data);
+      }
+    },
+    onError: (error) => {
+      console.error("Add patient error:", error);
+      if (options.onError) {
+        options.onError(error.message || "Failed to add new patient");
+      }
+    },
+  });
+};
+
+export const useUpdateStatusPasien = (options = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (nik) => {
+      const token_core = localStorage.getItem("token");
+      const faskes_id = localStorage.getItem("selectedFaskesId");
+      const username = localStorage.getItem("username");
+
+      console.log("Token from localStorage:", token_core);
+      console.log("Faskes ID:", faskes_id);
+      console.log("Username:", username);
+
+      const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+      console.log("Cleaned token:", cleanTokenCore);
+
+      const payload = {
+        faskes_id: faskes_id,
+        username: username,
+        nik: nik,
+      };
+
+      try {
+        console.log("Sending update status request with headers:", {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${cleanTokenCore}`,
+        });
+
+        const response = await api.post(
+          "profile/tautkan/update-status-pasien",
+          payload,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
+
+        console.log("Update status response:", response);
+
+        if (!response.data.success) {
+          throw new Error(response.data.message || "Failed to update patient status");
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error("Error details:", error.response ? error.response.data : error);
+        throw error;
+      }
+    },
+    onSuccess: (data) => {
+      console.log("Update patient status success:", data);
+      queryClient.invalidateQueries("patients");
+      if (options.onSuccess) {
+        options.onSuccess(data);
+      }
+    },
+    onError: (error) => {
+      console.error("Update patient status error:", error);
+      if (options.onError) {
+        options.onError(error.message || "Failed to update patient status");
+      }
+    },
+  });
+};
+
+export const UseOneProfile = ({ onSuccess, onError }) => {
+  return useMutation({
+    mutationFn: async (body) => {
+      const user = await api.post("auth/register", body);
+      return user.data;
+    },
+    onSuccess,
+    onError,
+  });
+};
+
+export const UseDeleteProfile = (options = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id }) => {
+      const username = localStorage.getItem("username");
+      const token_core = localStorage.getItem("token");
+
+      const cleanTokenCore = token_core
+        ? token_core.replace(/^"|"$/g, "")
+        : null;
+
+      try {
+        const response = await api.post("profile/remove", {
+          username: username,
+          id: id,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${cleanTokenCore}`,
+          },
+        }
+      );
+
+        if (!response.data.success && response.data.code !== 200) {
+          throw new Error(response.data.message);
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error("Error removing profile:", error);
+        throw error;
+      }
+    },
+    onSuccess: (data) => {
+      console.log("Delete success:", data);
+      queryClient.invalidateQueries("all-profile");
+      if (options.onSuccess) {
+        options.onSuccess(data);
+      }
+    },
+    onError: (error) => {
+      console.error("Delete error:", error);
+      if (options.onError) {
+        options.onError(error.message || "Gagal menghapus profil");
+      }
+    },
+  });
+};
