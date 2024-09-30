@@ -18,33 +18,27 @@ import { useQuery } from '@tanstack/react-query';
 //     });
 // };
 export const UseGetPoly = () => {
-    const id_faskes = JSON.parse(localStorage.getItem('selectedFaskesId'));
-    // const no_telepon = localStorage.getItem('no_telepon');
-    // const token_mobile = localStorage.getItem('tokenmobile');
+    const [idFaskes, setIdFaskes] = useState(null);
 
-    // Hapus tanda kutip ganda jika ada
-    // const cleanNoTelepon = no_telepon ? no_telepon.replace(/^"|"$/g, '') : null;
-    // const cleanTokenMobile = token_mobile ? token_mobile.replace(/^"|"$/g, '') : null;
+    useEffect(() => {
+        // Akses localStorage hanya di sisi klien
+        const storedIdFaskes = typeof window !== 'undefined' ? localStorage.getItem('selectedFaskesId') : null;
+        setIdFaskes(storedIdFaskes ? JSON.parse(storedIdFaskes) : null);
+    }, []);
 
     return useQuery({
-        queryKey: ['poliklinik', id_faskes],
+        queryKey: ['poliklinik', idFaskes],
         queryFn: async () => {
-            if (!id_faskes) {
+            if (!idFaskes) {
                 throw new Error('Faskes ID is required');
             }
-            // if (!cleanNoTelepon) {
-            //     throw new Error('Phone number is required');
-            // }
-            // if (!cleanTokenMobile) {
-            //     throw new Error('Token is required');
-            // }
             const response = await api.post('akun/poli', {
-                faskes_id: id_faskes,
-                // no_telepon: cleanNoTelepon,
-                // tokenmobile: cleanTokenMobile
+                faskes_id: idFaskes,
             });
             return response.data;
         },
+        // Jangan jalankan query sampai idFaskes tersedia
+        enabled: !!idFaskes,
     });
 };
 
@@ -68,17 +62,25 @@ export const UseGetDoctor = (id_poli) => {
 
 
 export const UseGetAllDoctor = () => {
-    const id_faskes = JSON.parse(localStorage.getItem('selectedFaskesId'));
+    const [idFaskes, setIdFaskes] = useState(null);
+
+    useEffect(() => {
+        // Akses localStorage hanya di sisi klien
+        const storedIdFaskes = typeof window !== 'undefined' ? localStorage.getItem('selectedFaskesId') : null;
+        setIdFaskes(storedIdFaskes ? JSON.parse(storedIdFaskes) : null);
+    }, []);
 
     return useQuery({
-        queryKey: ['all-dokter', id_faskes],
+        queryKey: ['all-dokter', idFaskes],
         queryFn: async () => {
-            if (!id_faskes) {
+            if (!idFaskes) {
                 throw new Error('Faskes ID is required');
             }
-            const response = await api.get(`jadwal/get-jadwal/alldoctors?faskes_id=${id_faskes}`);
+            const response = await api.get(`jadwal/get-jadwal/alldoctors?faskes_id=${idFaskes}`);
             return response.data;
         },
+        // Jangan jalankan query sampai idFaskes tersedia
+        enabled: !!idFaskes,
     });
 };
 export const UseGetJadwalDoctor = (id_dokter) => {

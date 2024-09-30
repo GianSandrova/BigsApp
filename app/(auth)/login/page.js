@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Ilustrasi from '@/public/assets/images/login.png'
 import Logo from '@/components/logo';
 import Link from 'next/link';
@@ -9,25 +9,27 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { FormRow } from '@/components/FormRow';
 
-
 function Login() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+    const [isClient, setIsClient] = useState(false);
     const [redirect, setRedirect] = useState(null);
     const [loadingToastId, setLoadingToastId] = useState(null);
 
     useEffect(() => {
+        setIsClient(true);
+        const searchParams = new URLSearchParams(window.location.search);
         const redirectParam = searchParams.get('redirect');
         if (redirectParam) {
             setRedirect(decodeURIComponent(redirectParam));
         }
-    }, [searchParams]);
+    }, []);
+
+    const router = isClient ? useRouter() : null;
 
     const handleSuccessfulLogin = () => {
         if (redirect) {
             router.push(redirect);
         } else {
-            router.push('/'); // Default redirect if no specific page was requested
+            router.push('/');
         }
     };
 
@@ -72,6 +74,10 @@ function Login() {
         
         userLogin({ email, password });
     };
+
+    if (!isClient) {
+        return <div>Loading...</div>; // or any loading indicator
+    }
 
     return (
         <div className="min-h-screen flex items-center w-full bg-white justify-center">

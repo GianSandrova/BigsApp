@@ -1,25 +1,34 @@
 'use client';
 import Logo from '@/components/logo';
 import Image from 'next/image';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Ilustrasi from '@/public/assets/images/reset_password.svg'
 import { FormRow } from '@/components/FormRow';
-import {  useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { UseAuthResetPassword } from '@/service/auth.service';
 import { toast } from 'sonner';
 
 function ResetPassword() {
-    const router = useRouter();
-    const searchParams = useSearchParams()
-
-    console.log("Parameter lp:", searchParams.get('lp'));
-
-    if (!searchParams.get('lp')) {
-        console.log("Parameter lp tidak ditemukan, mengarahkan ke /login");
-        router.push('/login');
-    }
-
+    const [isClient, setIsClient] = useState(false);
+    const [token, setToken] = useState('');
     const [loadingToastId, setLoadingToastId] = useState(null);
+
+    const router = isClient ? useRouter() : null;
+
+    useEffect(() => {
+        setIsClient(true);
+        const searchParams = new URLSearchParams(window.location.search);
+        const lpParam = searchParams.get('lp');
+        
+        if (lpParam) {
+            setToken(lpParam);
+        } else {
+            console.log("Parameter lp tidak ditemukan, mengarahkan ke /login");
+            if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+            }
+        }
+    }, []);
 
     const { mutate: storeResetPassword, isLoading: resetPasswordLoading } = UseAuthResetPassword({
         onSuccess: (data) => {
@@ -42,7 +51,10 @@ function ResetPassword() {
         setLoadingToastId(toast.loading('Loading...'));
         storeResetPassword(jsonBody);
     };
-    
+
+    if (!isClient) {
+        return <div>Loading...</div>; // or any loading indicator
+    }
 
     return (
         <div className="min-h-screen flex items-center w-full bg-white justify-center">
@@ -53,13 +65,14 @@ function ResetPassword() {
                     <div className='text-base font-medium text-center text-gray my-3'>Reset Password Anda</div>
                     <form onSubmit={onSubmit}>
                         <FormRow type="password" name="newPassword" labelText="Password" style={"mb-2"} />
-                        <FormRow type="hidden" name="token" style={"mb-2"} value={searchParams.get('lp')} />
+                        <FormRow type="hidden" name="token" style={"mb-2"} value={token} />
                         <div className="mt-3">
                             <button
                                 type="submit"
                                 className="w-full bg-primary1 text-white p-2 rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                                disabled={resetPasswordLoading}
                             >
-                                Simpan
+                                {resetPasswordLoading ? 'Loading...' : 'Simpan'}
                             </button>
                         </div>
                     </form>
@@ -69,4 +82,4 @@ function ResetPassword() {
     );
 }
 
-export default ResetPassword
+export default ResetPassword;
