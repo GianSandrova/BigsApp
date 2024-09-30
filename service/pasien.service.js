@@ -168,7 +168,7 @@ export const UseGetProfileByFaskes = () => {
 //     });
 // };
 
-export const useGetProfilePasienByNik = (nik, type) => {
+export const UseGetProfilePasienByNik = (nik, type) => {
   const [userData, setUserData] = useState({
     username: null,
     token_core: null,
