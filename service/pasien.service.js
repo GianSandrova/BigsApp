@@ -1,6 +1,7 @@
 import { api } from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authHeader } from "@/lib";
+import { useState, useEffect } from 'react';
 
 export const UseAllProfile = () => {
   const username = localStorage.getItem("username");
@@ -38,17 +39,19 @@ export const usePendingApproval = () => {
     queryKey: ["PendingApproval", username, cleanTokenCore],
     queryFn: async () => {
       try {
-        const response = await api.post("profile/get-all/pending-approval", {
-          username: username,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${cleanTokenCore}`,
+        const response = await api.post(
+          "profile/get-all/pending-approval",
+          {
+            username: username,
           },
-        }
-      );
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
         // Sesuaikan pengecekan dengan respons API
         if (response.data.code !== 200) {
           // Ganti dengan pengecekan yang sesuai
@@ -79,17 +82,19 @@ export const UseDetailProfile = (id) => {
         throw new Error("Authentication data is missing");
       }
       try {
-        const response = await api.post(`profile/get-by-id?id=${id}`, {
-          username: username,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${cleanTokenCore}`,
+        const response = await api.post(
+          `profile/get-by-id?id=${id}`,
+          {
+            username: username,
           },
-        }
-      );
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
         if (!response.data || response.data.code !== 200) {
           throw new Error(
             response.data?.message || "Failed to fetch profile data"
@@ -163,22 +168,35 @@ export const UseGetProfileByFaskes = () => {
 //     });
 // };
 
-export const UseGetProfilePasienByNik = (nik, type) => {
-  const username = localStorage.getItem("username");
-  const token_core = localStorage.getItem("token");
-  const id_faskes = JSON.parse(localStorage.getItem("selectedFaskesId"));
+export const useGetProfilePasienByNik = (nik, type) => {
+  const [userData, setUserData] = useState({
+    username: null,
+    token_core: null,
+    id_faskes: null,
+  });
 
-  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+  useEffect(() => {
+    // Access localStorage only on the client side
+    setUserData({
+      username: localStorage.getItem("username"),
+      token_core: localStorage.getItem("token"),
+      id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
+    });
+  }, []);
+
+  const cleanTokenCore = userData.token_core
+    ? userData.token_core.replace(/^"|"$/g, "")
+    : null;
 
   return useQuery({
-    queryKey: ["get-by-nik", nik, type, username, cleanTokenCore],
+    queryKey: ["get-by-nik", nik, type, userData.username, cleanTokenCore],
     queryFn: async () => {
       try {
         const response = await api.post(
           `profile/tautkan/cari-pasien?nik=${nik}&type=${type}`,
           {
-            faskes_id: id_faskes,
-            username: username,
+            faskes_id: userData.id_faskes,
+            username: userData.username,
             token_core: cleanTokenCore,
           },
           {
@@ -198,7 +216,8 @@ export const UseGetProfilePasienByNik = (nik, type) => {
         throw error;
       }
     },
-    enabled: !!nik,
+    enabled:
+      !!nik && !!userData.username && !!cleanTokenCore && !!userData.id_faskes,
   });
 };
 
@@ -217,15 +236,13 @@ export const UsePostProfilePasien = (nik, type, options = {}) => {
           token_core: cleanTokenCore,
         };
 
-        const response = await api.post("profile/tautkan", body,
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${cleanTokenCore}`,
-            },
-          }
-        );
+        const response = await api.post("profile/tautkan", body, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${cleanTokenCore}`,
+          },
+        });
 
         if (response.data && response.data.success) {
           return response.data;
@@ -266,19 +283,21 @@ export const useCheckStatusPasien = (nik) => {
     queryKey: ["check-status-pasien", nik, faskes_id, username, cleanTokenCore],
     queryFn: async () => {
       try {
-        const response = await api.post("profile/tautkan/check-status-pasien", {
-          faskes_id: faskes_id,
-          nik: nik,
-          username: username,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${cleanTokenCore}`,
+        const response = await api.post(
+          "profile/tautkan/check-status-pasien",
+          {
+            faskes_id: faskes_id,
+            nik: nik,
+            username: username,
           },
-        }
-      );
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
 
         if (!response.data.success) {
           throw new Error(
@@ -375,7 +394,9 @@ export const useUpdateStatusPasien = (options = {}) => {
       console.log("Faskes ID:", faskes_id);
       console.log("Username:", username);
 
-      const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+      const cleanTokenCore = token_core
+        ? token_core.replace(/^"|"$/g, "")
+        : null;
       console.log("Cleaned token:", cleanTokenCore);
 
       const payload = {
@@ -406,12 +427,17 @@ export const useUpdateStatusPasien = (options = {}) => {
         console.log("Update status response:", response);
 
         if (!response.data.success) {
-          throw new Error(response.data.message || "Failed to update patient status");
+          throw new Error(
+            response.data.message || "Failed to update patient status"
+          );
         }
 
         return response.data;
       } catch (error) {
-        console.error("Error details:", error.response ? error.response.data : error);
+        console.error(
+          "Error details:",
+          error.response ? error.response.data : error
+        );
         throw error;
       }
     },
@@ -455,18 +481,20 @@ export const UseDeleteProfile = (options = {}) => {
         : null;
 
       try {
-        const response = await api.post("profile/remove", {
-          username: username,
-          id: id,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${cleanTokenCore}`,
+        const response = await api.post(
+          "profile/remove",
+          {
+            username: username,
+            id: id,
           },
-        }
-      );
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
 
         if (!response.data.success && response.data.code !== 200) {
           throw new Error(response.data.message);
