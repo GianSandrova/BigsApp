@@ -12,8 +12,7 @@ function ResetPassword() {
     const [isClient, setIsClient] = useState(false);
     const [token, setToken] = useState('');
     const [loadingToastId, setLoadingToastId] = useState(null);
-
-    const router = isClient ? useRouter() : null;
+    const router = useRouter();
 
     useEffect(() => {
         setIsClient(true);
@@ -35,7 +34,9 @@ function ResetPassword() {
             toast.dismiss(loadingToastId);
             console.log(data);
             toast.success(data.message)
-            router.push('/login')
+            if (isClient) {
+                router.push('/login')
+            }
         },
         onError: (data) => {
             toast.dismiss(loadingToastId);

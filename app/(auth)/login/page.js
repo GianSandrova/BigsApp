@@ -5,7 +5,7 @@ import Ilustrasi from '@/public/assets/images/login.png'
 import Logo from '@/components/logo';
 import Link from 'next/link';
 import { useAuthLogin } from '@/service/auth.service';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { FormRow } from '@/components/FormRow';
 
@@ -13,6 +13,7 @@ function Login() {
     const [isClient, setIsClient] = useState(false);
     const [redirect, setRedirect] = useState(null);
     const [loadingToastId, setLoadingToastId] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         setIsClient(true);
@@ -23,13 +24,13 @@ function Login() {
         }
     }, []);
 
-    const router = isClient ? useRouter() : null;
-
     const handleSuccessfulLogin = () => {
-        if (redirect) {
-            router.push(redirect);
-        } else {
-            router.push('/');
+        if (isClient) {
+            if (redirect) {
+                router.push(redirect);
+            } else {
+                router.push('/');
+            }
         }
     };
 
@@ -40,8 +41,10 @@ function Login() {
             if (response.status === "success" && response.data) {
                 const userData = response.data;
                 if (userData.access_token) {
-                    localStorage.setItem('token', JSON.stringify(userData.access_token));
-                    localStorage.setItem('username', userData.username);
+                    if (isClient) {
+                        localStorage.setItem('token', JSON.stringify(userData.access_token));
+                        localStorage.setItem('username', userData.username);
+                    }
                     toast.success('Anda berhasil login!')
                     handleSuccessfulLogin();
                 } else {
