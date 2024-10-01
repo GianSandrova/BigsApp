@@ -222,15 +222,28 @@ export const UseGetProfilePasienByNik = (nik, type) => {
 };
 
 export const UsePostProfilePasien = (nik, type, options = {}) => {
-  const id_faskes = localStorage.getItem("selectedFaskesId");
-  const token_core = localStorage.getItem("token");
-  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+  const [userData, setUserData] = useState({
+    token_core: null,
+    id_faskes: null,
+  });
+
+  useEffect(() => {
+    // Access localStorage only on the client side
+    setUserData({
+      token_core: localStorage.getItem("token"),
+      id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
+    });
+  }, []);
+
+  const cleanTokenCore = userData.token_core
+  ? userData.token_core.replace(/^"|"$/g, "")
+  : null;
 
   return useMutation({
     mutationFn: async () => {
       try {
         const body = {
-          faskes_id: id_faskes,
+          faskes_id: userData.id_faskes,
           nik: nik,
           type: type,
           token_core: cleanTokenCore,
@@ -273,11 +286,24 @@ export const UsePostProfilePasien = (nik, type, options = {}) => {
 };
 
 export const useCheckStatusPasien = (nik) => {
-  const username = localStorage.getItem("username");
-  const token_core = localStorage.getItem("token");
-  const faskes_id = localStorage.getItem("selectedFaskesId");
+  const [userData, setUserData] = useState({
+    username: null,
+    token_core: null,
+    id_faskes: null,
+  });
 
-  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+  useEffect(() => {
+    // Access localStorage only on the client side
+    setUserData({
+      username: localStorage.getItem("username"),
+      token_core: localStorage.getItem("token"),
+      id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
+    });
+  }, []);
+
+  const cleanTokenCore = userData.token_core
+    ? userData.token_core.replace(/^"|"$/g, "")
+    : null;
 
   return useQuery({
     queryKey: ["check-status-pasien", nik, faskes_id, username, cleanTokenCore],
@@ -286,9 +312,9 @@ export const useCheckStatusPasien = (nik) => {
         const response = await api.post(
           "profile/tautkan/check-status-pasien",
           {
-            faskes_id: faskes_id,
+            faskes_id: userData.id_faskes,
             nik: nik,
-            username: username,
+            username: userData.username,
           },
           {
             headers: {
