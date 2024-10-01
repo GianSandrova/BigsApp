@@ -1,5 +1,5 @@
-"use client";
-import { useState, useEffect, useMemo } from "react";
+'use client';
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Listbox,
@@ -22,38 +22,40 @@ export default function Example() {
   const { data, isLoading, error } = useGetAllFaskes();
   const [selectedFaskes, setSelectedFaskes] = useState(null);
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
-  const saveFaskesId = (faskes) => {
-    if (faskes && faskes.id) {
-      localStorage.setItem("selectedFaskesId", faskes.id);
-    }
-  };
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (data && Array.isArray(data.data) && data.data.length > 0) {
       setSelectedFaskes(data.data[0]);
-      saveFaskesId(data.data[0]);
+      if (isClient) {
+        localStorage.setItem("selectedFaskesId", data.data[0].id);
+      }
     }
-  }, [data]);
+  }, [data, isClient]);
 
   const handleFaskesChange = (faskes) => {
     setSelectedFaskes(faskes);
-    saveFaskesId(faskes);
+    if (isClient && faskes && faskes.id) {
+      localStorage.setItem("selectedFaskesId", faskes.id);
+    }
   };
 
   function handleClick() {
     if (selectedFaskes) {
-      saveFaskesId(selectedFaskes);
+      if (isClient) {
+        localStorage.setItem("selectedFaskesId", selectedFaskes.id);
+      }
       router.push("/");
     } else {
       alert("Silakan pilih klinik terlebih dahulu");
     }
   }
 
-  const faskesOptions = useMemo(() => {
-    return data?.data || [];
-  }, [data]);
-
+  if (!isClient) return null; // Don't render anything on the server
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
