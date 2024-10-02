@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import { useState, useEffect } from 'react';
-import { authHeader } from '@/lib';
-import {useAuthToken} from '@/hooks/useAuthToken'
+
 
 // export const useGetAllFaskes = () => {
 //     // const token = useAuthToken();
@@ -43,36 +42,12 @@ import {useAuthToken} from '@/hooks/useAuthToken'
 //   };
 
 export const useGetAllFaskes = () => {
-  const [userData, setUserData] = useState({
-    no_telepon: null,
-    token_core: null,
-    token_mobile: null,
-  });
-
-  useEffect(() => {
-    // Access localStorage only on the client side
-    setUserData({
-      no_telepon: localStorage.getItem('no_telepon'),
-      token_core: localStorage.getItem('token'),
-      token_mobile: localStorage.getItem('tokenmobile'),
-    });
-  }, []);
-
-  const cleanNoTelepon = userData.no_telepon ? userData.no_telepon.replace(/^"|"$/g, '') : null;
-  const cleanTokenCore = userData.token_core ? userData.token_core.replace(/^"|"$/g, '') : null;
-  const cleanTokenMobile = userData.token_mobile ? userData.token_mobile.replace(/^"|"$/g, '') : null;
-
   return useQuery({
-    queryKey: ['dokter', cleanNoTelepon, cleanTokenMobile],
+    queryKey: ['faskes'],
     queryFn: async () => {
-      const response = await api.post('faskes/get', {
-        no_telepon: cleanNoTelepon,
-        tokenmobile: cleanTokenMobile,
-        token_core: cleanTokenCore
-      });
+      const response = await api.get('faskes/get');
       return response.data;
-    },
-    enabled: !!cleanNoTelepon && !!cleanTokenMobile && !!cleanTokenCore,
+    }
   });
 };
   

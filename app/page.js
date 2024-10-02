@@ -54,7 +54,6 @@ export default function Example() {
     }
   }
 
-  if (!isClient) return null; // Don't render anything on the server
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 

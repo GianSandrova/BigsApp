@@ -306,7 +306,7 @@ export const useCheckStatusPasien = (nik) => {
     : null;
 
   return useQuery({
-    queryKey: ["check-status-pasien", nik, faskes_id, username, cleanTokenCore],
+    queryKey: ["check-status-pasien", nik, userData.id_faskes, userData.username, cleanTokenCore],
     queryFn: async () => {
       try {
         const response = await api.post(
@@ -337,7 +337,7 @@ export const useCheckStatusPasien = (nik) => {
         throw error;
       }
     },
-    enabled: !!nik && !!faskes_id && !!username && !!cleanTokenCore,
+    enabled: !!nik && !!userData.id_faskes && !!userData.username && !!cleanTokenCore,
   });
 };
 

@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -54,17 +55,25 @@ export default function DaftarKlinik() {
   useEffect(() => {
     if (data && Array.isArray(data.data)) {
       if (userLocation) {
-        const clinicsWithDistance = data.data.map((clinic) => ({
-          ...clinic,
-          distance: calculateDistance(userLocation, {
-            latitude: parseFloat(clinic.latitude),
-            longitude: parseFloat(clinic.longitude),
-          }),
-        }));
+        const clinicsWithDistance = data.data.map((clinic) => {
+          // Pastikan latitude dan longitude ada dan valid
+          if (clinic.latitude && clinic.longitude) {
+            const distance = calculateDistance(userLocation, {
+              latitude: parseFloat(clinic.latitude),
+              longitude: parseFloat(clinic.longitude),
+            });
+            return { ...clinic, distance };
+          }
+          // Jika tidak ada koordinat, set distance ke null
+          return { ...clinic, distance: null };
+        });
 
-        const sortedClinics = clinicsWithDistance.sort(
-          (a, b) => a.distance - b.distance
-        );
+        const sortedClinics = clinicsWithDistance.sort((a, b) => {
+          // Handle kasus dimana distance bisa null
+          if (a.distance === null) return 1;
+          if (b.distance === null) return -1;
+          return a.distance - b.distance;
+        });
         setClinics(sortedClinics);
       } else {
         setClinics(data.data);
@@ -73,6 +82,7 @@ export default function DaftarKlinik() {
   }, [data, userLocation]);
 
   function calculateDistance(point1, point2) {
+    if (!point1 || !point2) return null;
     const R = 6371;
     const dLat = deg2rad(point2.latitude - point1.latitude);
     const dLon = deg2rad(point2.longitude - point1.longitude);
@@ -105,11 +115,9 @@ export default function DaftarKlinik() {
 
   const handleLogoClick = (clinicId) => {
     localStorage.setItem("selectedFaskesId", clinicId);
-
     const loginBody = {
       faskes_id: clinicId,
     };
-
     klinikLoginMutation.mutate(loginBody);
   };
 
@@ -130,9 +138,9 @@ export default function DaftarKlinik() {
               <h4 className="font-bold text-large">
                 {clinics[active - 1].nama_faskes}
               </h4>
-              {userLocation && (
+              {userLocation && clinics[active - 1].distance !== null && (
                 <p className="text-small text-default-500">
-                  Jarak: {clinics[active - 1].distance.toFixed(2)} km
+                  Jarak: {clinics[active - 1].distance?.toFixed(2)} km
                 </p>
               )}
             </CardHeader>
