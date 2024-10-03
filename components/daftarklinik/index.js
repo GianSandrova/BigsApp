@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardHeader,
@@ -149,51 +149,53 @@ export default function DaftarKlinik() {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="flex flex-col items-center w-full px-4 sm:px-10">
+    <div className="px-4 sm:px-10">
       {locationError && (
-        <div className="w-full max-w-sm bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
           <p>{locationError}</p>
         </div>
       )}
       {clinics.length > 0 && (
-        <div 
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-          className="w-full max-w-sm mx-auto"
-        >
-          <Card className="py-4">
-            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-              <h4 className="font-bold text-large">
-                {clinics[active - 1].nama_faskes}
-              </h4>
-              {userLocation && clinics[active - 1].distance !== null && (
-                <p className="text-small text-default-500">
-                  Jarak: {clinics[active - 1].distance?.toFixed(2)} km
-                </p>
-              )}
-            </CardHeader>
-            <CardBody className="overflow-visible py-2">
-              <Image
-                alt="Card background"
-                className="object-cover rounded-xl w-full h-64 cursor-pointer"
-                src={clinics[active - 1].logo}
-                width={270}
-                onClick={() => handleLogoClick(clinics[active - 1].id)}
-              />
-            </CardBody>
-            <CardFooter>
-              <Link
-                isExternal
-                showAnchorIcon
-                href={`https://www.google.com/maps/search/?api=1&query=${
-                  clinics[active - 1].latitude
-                },${clinics[active - 1].longitude}`}
-              >
-                Lihat Lokasi
-              </Link>
-            </CardFooter>
-          </Card>
+        <div className="grid grid-cols-1 gap-4">
+          <div
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            className="w-full"
+          >
+            <Card className="py-4 mx-auto max-w-sm">
+              <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                <h4 className="font-bold text-large">
+                  {clinics[active - 1].nama_faskes}
+                </h4>
+                {userLocation && clinics[active - 1].distance !== null && (
+                  <p className="text-small text-default-500">
+                    Jarak: {clinics[active - 1].distance?.toFixed(2)} km
+                  </p>
+                )}
+              </CardHeader>
+              <CardBody className="overflow-visible py-2">
+                <Image
+                  alt="Card background"
+                  className="object-cover rounded-xl w-full h-64 cursor-pointer"
+                  src={clinics[active - 1].logo}
+                  width={270}
+                  onClick={() => handleLogoClick(clinics[active - 1].id)}
+                />
+              </CardBody>
+              <CardFooter>
+                <Link
+                  isExternal
+                  showAnchorIcon
+                  href={`https://www.google.com/maps/search/?api=1&query=${
+                    clinics[active - 1].latitude
+                  },${clinics[active - 1].longitude}`}
+                >
+                  Lihat Lokasi
+                </Link>
+              </CardFooter>
+            </Card>
+          </div>
         </div>
       )}
 
