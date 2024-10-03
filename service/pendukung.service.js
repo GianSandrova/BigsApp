@@ -45,21 +45,30 @@ export const UseGetPoly = () => {
 
 
 export const UseGetDoctor = (id_poli) => {
-    const id_faskes = JSON.parse(localStorage.getItem('selectedFaskesId'));
-
-    return useQuery({
-        queryKey: ['dokter', id_faskes, id_poli],
-        queryFn: async () => {
-            const response = await api.get('jadwal/get-jadwal/jadwal', {
-                params: {
-                    id_faskes: id_faskes,
-                    id_departemen: id_poli,
-                }
-            });
-            return response.data;
-        }
+    const [userData, setUserData] = useState({
+      id_faskes: null,
     });
-};
+  
+    useEffect(() => {
+      setUserData({
+        id_faskes: JSON.parse(localStorage.getItem('selectedFaskesId')),
+      });
+    }, []);
+  
+    return useQuery({
+      queryKey: ['dokter', userData.id_faskes, id_poli],
+      queryFn: async () => {
+        const response = await api.get('jadwal/get-jadwal/jadwal', {
+          params: {
+            id_faskes: userData.id_faskes,
+            id_departemen: id_poli,
+          }
+        });
+        return response.data;
+      },
+      enabled: !!userData.id_faskes && !!id_poli, // Only run query when we have both values
+    });
+  };
 
 
 export const UseGetAllDoctor = () => {

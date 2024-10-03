@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardHeader,
@@ -20,7 +20,12 @@ export default function DaftarKlinik() {
   const [clinics, setClinics] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
   const router = useRouter();
+
+  // Minimum swipe distance for detection (in pixels)
+  const minSwipeDistance = 50;
 
   const klinikLoginMutation = useKlinikLogin({
     onSuccess: (data) => {
@@ -32,13 +37,35 @@ export default function DaftarKlinik() {
     },
   });
 
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && active < clinics.length) {
+      next();
+    } else if (isRightSwipe && active > 1) {
+      prev();
+    }
+  };
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ latitude, longitude });
-          console.log("User location:", latitude, longitude);
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -56,7 +83,6 @@ export default function DaftarKlinik() {
     if (data && Array.isArray(data.data)) {
       if (userLocation) {
         const clinicsWithDistance = data.data.map((clinic) => {
-          // Pastikan latitude dan longitude ada dan valid
           if (clinic.latitude && clinic.longitude) {
             const distance = calculateDistance(userLocation, {
               latitude: parseFloat(clinic.latitude),
@@ -64,12 +90,10 @@ export default function DaftarKlinik() {
             });
             return { ...clinic, distance };
           }
-          // Jika tidak ada koordinat, set distance ke null
           return { ...clinic, distance: null };
         });
 
         const sortedClinics = clinicsWithDistance.sort((a, b) => {
-          // Handle kasus dimana distance bisa null
           if (a.distance === null) return 1;
           if (b.distance === null) return -1;
           return a.distance - b.distance;
@@ -133,38 +157,45 @@ export default function DaftarKlinik() {
       )}
       {clinics.length > 0 && (
         <div className="grid grid-cols-1 gap-4">
-          <Card className="py-4 mx-auto max-w-sm">
-            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-              <h4 className="font-bold text-large">
-                {clinics[active - 1].nama_faskes}
-              </h4>
-              {userLocation && clinics[active - 1].distance !== null && (
-                <p className="text-small text-default-500">
-                  Jarak: {clinics[active - 1].distance?.toFixed(2)} km
-                </p>
-              )}
-            </CardHeader>
-            <CardBody className="overflow-visible py-2">
-              <Image
-                alt="Card background"
-                className="object-cover rounded-xl w-full h-64 cursor-pointer"
-                src={clinics[active - 1].logo}
-                width={270}
-                onClick={() => handleLogoClick(clinics[active - 1].id)}
-              />
-            </CardBody>
-            <CardFooter>
-              <Link
-                isExternal
-                showAnchorIcon
-                href={`https://www.google.com/maps/search/?api=1&query=${
-                  clinics[active - 1].latitude
-                },${clinics[active - 1].longitude}`}
-              >
-                Lihat Lokasi
-              </Link>
-            </CardFooter>
-          </Card>
+          <div
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            className="w-full"
+          >
+            <Card className="py-4 mx-auto max-w-sm">
+              <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                <h4 className="font-bold text-large">
+                  {clinics[active - 1].nama_faskes}
+                </h4>
+                {userLocation && clinics[active - 1].distance !== null && (
+                  <p className="text-small text-default-500">
+                    Jarak: {clinics[active - 1].distance?.toFixed(2)} km
+                  </p>
+                )}
+              </CardHeader>
+              <CardBody className="overflow-visible py-2">
+                <Image
+                  alt="Card background"
+                  className="object-cover rounded-xl w-full h-64 cursor-pointer"
+                  src={clinics[active - 1].logo}
+                  width={270}
+                  onClick={() => handleLogoClick(clinics[active - 1].id)}
+                />
+              </CardBody>
+              <CardFooter>
+                <Link
+                  isExternal
+                  showAnchorIcon
+                  href={`https://www.google.com/maps/search/?api=1&query=${
+                    clinics[active - 1].latitude
+                  },${clinics[active - 1].longitude}`}
+                >
+                  Lihat Lokasi
+                </Link>
+              </CardFooter>
+            </Card>
+          </div>
         </div>
       )}
 

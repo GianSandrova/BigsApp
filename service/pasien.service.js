@@ -114,17 +114,30 @@ export const UseDetailProfile = (id) => {
 };
 
 export const UseGetProfileByFaskes = () => {
-  const username = localStorage.getItem("username");
-  const token_core = localStorage.getItem("token");
-  const id_faskes = localStorage.getItem("selectedFaskesId");
-  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+  const [userData, setUserData] = useState({
+    username: null,
+    token_core: null,
+    id_faskes: null,
+  });
+
+  useEffect(() => {
+    setUserData({
+      username: localStorage.getItem("username"),
+      token_core: localStorage.getItem("token"),
+      id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
+    });
+  }, []);
+
+  const cleanTokenCore = userData.token_core
+    ? userData.token_core.replace(/^"|"$/g, "")
+    : null;
 
   return useQuery({
-    queryKey: ["Profil-By-Faskes", username, cleanTokenCore, id_faskes],
+    queryKey: ["Profil-By-Faskes", userData.username, cleanTokenCore, userData.id_faskes],
     queryFn: async () => {
       try {
         const response = await api.post(
-          `profile/get-by-faskes?faskes_id=${id_faskes}`,
+          `profile/get-by-faskes?faskes_id=${userData.id_faskes}`,
           {
             username: username,
           },
@@ -152,21 +165,6 @@ export const UseGetProfileByFaskes = () => {
   });
 };
 
-// jadi ini tu buat ngecek pas ditambahin pasiennya ada apa engga kalo ada dia bakal
-// nampilin datanya tapi kalo engga dia bakalan nampilin NIK tidak terdaftar pada klinik'
-// ini tu didapetin dari fucntion actionCekPasien - Core
-// export const UseGetProfilePasienByNik = ({ onSuccess, onError }) => {
-//     return useMutation({
-//         mutationFn: async (body) => {
-//             const user = await api.post("profile/get-by-nik?nik=617171", body, {
-//                 headers: authHeader(),
-//             });
-//             return user.data;
-//         },
-//         onSuccess,
-//         onError
-//     });
-// };
 
 export const UseGetProfilePasienByNik = (nik, type) => {
   const [userData, setUserData] = useState({
