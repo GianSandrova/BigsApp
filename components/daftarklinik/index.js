@@ -24,7 +24,6 @@ export default function DaftarKlinik() {
   const [touchEnd, setTouchEnd] = useState(null);
   const router = useRouter();
 
-  // Minimum swipe distance for detection (in pixels)
   const minSwipeDistance = 50;
 
   const klinikLoginMutation = useKlinikLogin({
@@ -48,7 +47,7 @@ export default function DaftarKlinik() {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -66,15 +65,20 @@ export default function DaftarKlinik() {
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ latitude, longitude });
+          console.log("User location:", latitude, longitude);
         },
         (error) => {
           console.error("Error getting user location:", error);
-          setLocationError("Failed to get your location. Distances won't be shown.");
+          setLocationError(
+            "Failed to get your location. Distances won't be shown."
+          );
           setUserLocation(null);
         }
       );
     } else {
-      setLocationError("Geolocation is not supported by your browser. Distances won't be shown.");
+      setLocationError(
+        "Geolocation is not supported by your browser. Distances won't be shown."
+      );
       setUserLocation(null);
     }
   }, []);
@@ -83,6 +87,7 @@ export default function DaftarKlinik() {
     if (data && Array.isArray(data.data)) {
       if (userLocation) {
         const clinicsWithDistance = data.data.map((clinic) => {
+          // Pastikan latitude dan longitude ada dan valid
           if (clinic.latitude && clinic.longitude) {
             const distance = calculateDistance(userLocation, {
               latitude: parseFloat(clinic.latitude),
@@ -90,10 +95,12 @@ export default function DaftarKlinik() {
             });
             return { ...clinic, distance };
           }
+          // Jika tidak ada koordinat, set distance ke null
           return { ...clinic, distance: null };
         });
 
         const sortedClinics = clinicsWithDistance.sort((a, b) => {
+          // Handle kasus dimana distance bisa null
           if (a.distance === null) return 1;
           if (b.distance === null) return -1;
           return a.distance - b.distance;
@@ -151,7 +158,10 @@ export default function DaftarKlinik() {
   return (
     <div className="px-4 sm:px-10">
       {locationError && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <div
+          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
+          role="alert"
+        >
           <p>{locationError}</p>
         </div>
       )}
@@ -161,7 +171,6 @@ export default function DaftarKlinik() {
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
-            className="w-full"
           >
             <Card className="py-4 mx-auto max-w-sm">
               <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
