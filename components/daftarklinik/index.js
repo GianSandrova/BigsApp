@@ -171,6 +171,7 @@ export default function DaftarKlinik() {
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
+            className="w-full"
           >
             <Card className="py-4 mx-auto max-w-sm">
               <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
