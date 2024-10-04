@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
@@ -238,7 +238,7 @@ export default function DaftarKlinik() {
               </h4>
               {userLocation && (
                 <p className="text-small text-default-500">
-                  Jarak: {clinics[active - 1].distance.toFixed(2)} km
+                  Jarak: {clinics[active - 1].distance?.toFixed(2)} km
                 </p>
               )}
             </CardHeader>
