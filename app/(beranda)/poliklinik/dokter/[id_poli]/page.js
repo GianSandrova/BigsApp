@@ -11,8 +11,6 @@ import { Modal } from "@/components/modal";
 import { Search } from "@/components/search";
 import {
   UseGetDoctor,
-  UseGetJadwalDoctor,
-  UseGetJadwalDoctorByDay,
 } from "@/service/pendukung.service";
 import { UseGetProfileByFaskes } from "@/service/pasien.service";
 import { LoadingPage, LoadingJadwal } from "@/components/loading";
@@ -56,7 +54,7 @@ const DokterById = ({ params }) => {
     data: dataProfile,
     isLoadingDataProfile,
     isError: isErrorDataProfile,
-  } = UseGetProfileByFaskes();
+  } = UseGetProfileByFaskes(isUser);
   const response = dataProfile?.data;
   console.log("Ini profilenya" + response);
 
