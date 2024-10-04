@@ -121,11 +121,22 @@ export const UseGetProfileByFaskes = () => {
   });
 
   useEffect(() => {
-    setUserData({
-      username: localStorage.getItem("username"),
-      token_core: localStorage.getItem("token"),
-      id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
-    });
+    const updateUserData = () => {
+      setUserData({
+        username: localStorage.getItem("username"),
+        token_core: localStorage.getItem("token"),
+        id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
+      });
+    };
+
+    updateUserData();
+
+    // Tambahkan event listener untuk storage changes
+    window.addEventListener('storage', updateUserData);
+
+    return () => {
+      window.removeEventListener('storage', updateUserData);
+    };
   }, []);
 
   const cleanTokenCore = userData.token_core
@@ -135,11 +146,15 @@ export const UseGetProfileByFaskes = () => {
   return useQuery({
     queryKey: ["Profil-By-Faskes", userData.username, cleanTokenCore, userData.id_faskes],
     queryFn: async () => {
+      if (!userData.username || !cleanTokenCore || !userData.id_faskes) {
+        throw new Error("Missing required data");
+      }
+
       try {
         const response = await api.post(
           `profile/get-by-faskes?faskes_id=${userData.id_faskes}`,
           {
-            username: username,
+            username: userData.username,
           },
           {
             headers: {
@@ -150,7 +165,6 @@ export const UseGetProfileByFaskes = () => {
           }
         );
 
-        // Check if the response is successful based on the code
         if (response.data.code !== 200) {
           throw new Error(response.data.message || "Failed to fetch profiles");
         }
@@ -162,6 +176,10 @@ export const UseGetProfileByFaskes = () => {
         throw error;
       }
     },
+    enabled: !!userData.username && !!cleanTokenCore && !!userData.id_faskes,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 };
 
