@@ -40,30 +40,46 @@ export default function DaftarKlinik() {
 
       let errorMessage = "Terjadi kesalahan pada server";
 
-      // Handle different error response structures
-      if (error.response) {
-        const responseData = error.response.data;
+      try {
+        // Handle different types of error responses
+        if (error.response) {
+          const status = error.response.status;
+          const responseData = error.response.data;
 
-        // Handle 500 error with PHP error structure
-        if (responseData.message && responseData.name) {
-          errorMessage = `${responseData.name}: ${responseData.message}`;
+          // Specific handling for 500 errors
+          if (status === 500) {
+            errorMessage = responseData.message || 
+                          "Internal Server Error: Terjadi kesalahan pada server";
+            
+            // If there's a more detailed error structure
+            if (responseData.error) {
+              errorMessage = `${responseData.error}: ${responseData.message}`;
+            }
+          } 
+          // Handle other error status codes
+          else {
+            errorMessage = responseData.message || 
+                          responseData.error || 
+                          `Error ${status}: ${error.response.statusText}`;
+          }
+        } 
+        // Handle network errors
+        else if (error.request) {
+          errorMessage = "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
+        } 
+        // Handle other types of errors
+        else {
+          errorMessage = error.message || "Terjadi kesalahan yang tidak diketahui";
         }
-        // Handle standard error response
-        else if (responseData.message) {
-          errorMessage = responseData.message;
-        }
-        // Handle error response with error property
-        else if (responseData.error && responseData.message) {
-          errorMessage = responseData.message;
-        }
-      } else if (error.message) {
-        errorMessage = error.message;
+      } catch (e) {
+        errorMessage = "Terjadi kesalahan dalam memproses response error";
+        console.error("Error while processing error response:", e);
       }
 
-      // Show error toast
+      // Always show error toast
       toast.error("Login Gagal", {
         description: errorMessage,
-        duration: 4000,
+        duration: 6000, // Increased duration for better readability
         position: "top-center",
       });
     },
