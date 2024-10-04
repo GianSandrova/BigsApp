@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
@@ -13,6 +13,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useGetAllFaskes } from "@/service/klinik.service";
 import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
+import { Toaster, toast } from "sonner";
 
 export default function DaftarKlinik() {
   const [active, setActive] = useState(1);
@@ -22,18 +23,70 @@ export default function DaftarKlinik() {
   const [locationError, setLocationError] = useState(null);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
 
   // Minimum swipe distance for detection (in pixels)
   const minSwipeDistance = 50;
-
   const klinikLoginMutation = useKlinikLogin({
     onSuccess: (data) => {
       console.log("Login successful:", data);
+      setIsLoggingIn(false);
+      toast.success("Login berhasil");
       router.push("/home");
     },
     onError: (error) => {
       console.error("Login failed:", error);
+      setIsLoggingIn(false);
+
+      let errorMessage = "Terjadi kesalahan pada server";
+
+      try {
+        // Handle different types of error responses
+        if (error.response) {
+          const status = error.response.status;
+          const responseData = error.response.data;
+
+          // Specific handling for 500 errors
+          if (status === 500) {
+            errorMessage =
+              responseData.message ||
+              "Internal Server Error: Terjadi kesalahan pada server";
+
+            // If there's a more detailed error structure
+            if (responseData.error) {
+              errorMessage = `${responseData.error}: ${responseData.message}`;
+            }
+          }
+          // Handle other error status codes
+          else {
+            errorMessage =
+              responseData.message ||
+              responseData.error ||
+              `Error ${status}: ${error.response.statusText}`;
+          }
+        }
+        // Handle network errors
+        else if (error.request) {
+          errorMessage =
+            "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
+        }
+        // Handle other types of errors
+        else {
+          errorMessage =
+            error.message || "Terjadi kesalahan yang tidak diketahui";
+        }
+      } catch (e) {
+        errorMessage = "Terjadi kesalahan dalam memproses response error";
+        console.error("Error while processing error response:", e);
+      }
+
+      // Always show error toast
+      toast.error("Login Gagal", {
+        description: errorMessage,
+        duration: 6000, // Increased duration for better readability
+        position: "top-center",
+      });
     },
   });
 
@@ -48,7 +101,7 @@ export default function DaftarKlinik() {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -69,12 +122,16 @@ export default function DaftarKlinik() {
         },
         (error) => {
           console.error("Error getting user location:", error);
-          setLocationError("Failed to get your location. Distances won't be shown.");
+          setLocationError(
+            "Failed to get your location. Distances won't be shown."
+          );
           setUserLocation(null);
         }
       );
     } else {
-      setLocationError("Geolocation is not supported by your browser. Distances won't be shown.");
+      setLocationError(
+        "Geolocation is not supported by your browser. Distances won't be shown."
+      );
       setUserLocation(null);
     }
   }, []);
@@ -138,64 +195,74 @@ export default function DaftarKlinik() {
   };
 
   const handleLogoClick = (clinicId) => {
+    if (isLoggingIn) return; // Prevent multiple clicks while loading
+
+    setIsLoggingIn(true);
     localStorage.setItem("selectedFaskesId", clinicId);
+
     const loginBody = {
       faskes_id: clinicId,
     };
-    klinikLoginMutation.mutate(loginBody);
+
+    try {
+      klinikLoginMutation.mutate(loginBody);
+    } catch (error) {
+      setIsLoggingIn(false);
+      toast.error("Login Gagal", {
+        description: "Terjadi kesalahan saat mencoba login",
+        duration: 4000,
+        position: "top-center",
+      });
+    }
   };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="px-4 sm:px-10 flex justify-center">
+    <div className="px-4 sm:px-10">
       {locationError && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <div
+          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
+          role="alert"
+        >
           <p>{locationError}</p>
         </div>
       )}
       {clinics.length > 0 && (
         <div className="grid grid-cols-1 gap-4">
-          <div
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-            className="w-full"
-          >
-            <Card className="py-4 mx-auto max-w-sm w-full">
-              <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                <h4 className="font-bold text-large">
-                  {clinics[active - 1].nama_faskes}
-                </h4>
-                {userLocation && clinics[active - 1].distance !== null && (
-                  <p className="text-small text-default-500">
-                    Jarak: {clinics[active - 1].distance?.toFixed(2)} km
-                  </p>
-                )}
-              </CardHeader>
-              <CardBody className="overflow-visible py-2">
-                <Image
-                  alt="Card background"
-                  className="object-cover rounded-xl w-full h-64 cursor-pointer"
-                  src={clinics[active - 1].logo}
-                  width={270}
-                  onClick={() => handleLogoClick(clinics[active - 1].id)}
-                />
-              </CardBody>
-              <CardFooter>
-                <Link
-                  isExternal
-                  showAnchorIcon
-                  href={`https://www.google.com/maps/search/?api=1&query=${
-                    clinics[active - 1].latitude
-                  },${clinics[active - 1].longitude}`}
-                >
-                  Lihat Lokasi
-                </Link>
-              </CardFooter>
-            </Card>
-          </div>
+          <Card className="py-4 mx-auto max-w-sm">
+            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+              <h4 className="font-bold text-large">
+                {clinics[active - 1].nama_faskes}
+              </h4>
+              {userLocation && (
+                <p className="text-small text-default-500">
+                  Jarak: {clinics[active - 1].distance.toFixed(2)} km
+                </p>
+              )}
+            </CardHeader>
+            <CardBody className="overflow-visible py-2">
+              <Image
+                alt="Card background"
+                className="object-cover rounded-xl w-full h-64 cursor-pointer"
+                src={clinics[active - 1].logo}
+                width={270}
+                onClick={() => handleLogoClick(clinics[active - 1].id)}
+              />
+            </CardBody>
+            <CardFooter>
+              <Link
+                isExternal
+                showAnchorIcon
+                href={`https://www.google.com/maps/search/?api=1&query=${
+                  clinics[active - 1].latitude
+                },${clinics[active - 1].longitude}`}
+              >
+                Lihat Lokasi
+              </Link>
+            </CardFooter>
+          </Card>
         </div>
       )}
 
