@@ -52,12 +52,14 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    if (tabValue === 0) {
-      refetchProfile();
-    } else if (tabValue === 1) {
+    if (tabValue === 1) {
       refetchPending();
     }
-  }, [tabValue, refetchProfile, refetchPending]);
+  }, [tabValue, refetchPending]);
+  
+  useEffect(() => {
+    refetchProfile();
+  }, []);
 
   const renderContent = () => {
     if (showAuthMessage) {
