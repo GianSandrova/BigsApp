@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { LoadingProfile } from "@/components/loading";
 import Offline from "@/components/offline";
 import {
@@ -33,13 +33,31 @@ export default function Profile() {
     }
   }, [isValid]);
 
-  const { data: pendingData, isLoading: pendingLoading } = usePendingApproval();
-  const { data: profileData, isLoading: profileLoading } =
-    UseGetProfileByFaskes();
+  const { 
+    data: profileData, 
+    isLoading: profileLoading, 
+    refetch: refetchProfile 
+  } = UseGetProfileByFaskes();
+  
+  const { 
+    data: pendingData, 
+    isLoading: pendingLoading,
+    refetch: refetchPending
+  } = usePendingApproval();
+  
+  
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
+  useEffect(() => {
+    if (tabValue === 0) {
+      refetchProfile();
+    } else if (tabValue === 1) {
+      refetchPending();
+    }
+  }, [tabValue, refetchProfile, refetchPending]);
 
   const renderContent = () => {
     if (showAuthMessage) {

@@ -1,7 +1,7 @@
 import { api } from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authHeader } from "@/lib";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export const UseAllProfile = () => {
   const username = localStorage.getItem("username");
@@ -29,20 +29,47 @@ export const UseAllProfile = () => {
   });
 };
 
-export const usePendingApproval = () => {
-  const username = localStorage.getItem("username");
-  const token_core = localStorage.getItem("token");
+export const UseGetProfileByFaskes = () => {
+  const [userData, setUserData] = useState({
+    username: null,
+    token_core: null,
+    id_faskes: null,
+  });
 
-  const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
+  useEffect(() => {
+    const updateUserData = () => {
+      setUserData({
+        username: localStorage.getItem("username"),
+        token_core: localStorage.getItem("token"),
+        id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
+      });
+    };
 
-  return useQuery({
-    queryKey: ["PendingApproval", username, cleanTokenCore],
+    updateUserData();
+    window.addEventListener("storage", updateUserData);
+    return () => {
+      window.removeEventListener("storage", updateUserData);
+    };
+  }, []);
+  const cleanTokenCore = userData.token_core
+    ? userData.token_core.replace(/^"|"$/g, "")
+    : null;
+  const query = useQuery({
+    queryKey: [
+      "Profil-By-Faskes",
+      userData.username,
+      cleanTokenCore,
+      userData.id_faskes,
+    ],
     queryFn: async () => {
+      if (!userData.username || !cleanTokenCore || !userData.id_faskes) {
+        throw new Error("Missing required data");
+      }
       try {
         const response = await api.post(
-          "profile/get-all/pending-approval",
+          `profile/get-by-faskes?faskes_id=${userData.id_faskes}`,
           {
-            username: username,
+            username: userData.username,
           },
           {
             headers: {
@@ -52,9 +79,77 @@ export const usePendingApproval = () => {
             },
           }
         );
-        // Sesuaikan pengecekan dengan respons API
         if (response.data.code !== 200) {
-          // Ganti dengan pengecekan yang sesuai
+          throw new Error(response.data.message || "Failed to fetch profiles");
+        }
+        console.log("Response:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        throw error;
+      }
+    },
+    enabled: false, // This prevents the query from running automatically
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+
+  return {
+    ...query,
+    refetch: query.refetch,
+  };
+};
+
+export const usePendingApproval = () => {
+  const [userData, setUserData] = useState({
+    username: null,
+    token_core: null,
+  });
+
+  useEffect(() => {
+    const updateUserData = () => {
+      setUserData({
+        username: localStorage.getItem("username"),
+        token_core: localStorage.getItem("token"),
+      });
+    };
+
+    updateUserData();
+
+    window.addEventListener("storage", updateUserData);
+
+    return () => {
+      window.removeEventListener("storage", updateUserData);
+    };
+  }, []);
+
+  const cleanTokenCore = userData.token_core
+    ? userData.token_core.replace(/^"|"$/g, "")
+    : null;
+
+  const query = useQuery({
+    queryKey: ["PendingApproval", userData.username, cleanTokenCore],
+    queryFn: async () => {
+      if (!userData.username || !cleanTokenCore) {
+        throw new Error("Missing required data");
+      }
+
+      try {
+        const response = await api.post(
+          "profile/get-all/pending-approval",
+          {
+            username: userData.username,
+          },
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cleanTokenCore}`,
+            },
+          }
+        );
+        if (response.data.code !== 200) {
           throw new Error(response.data.message);
         }
         return response.data;
@@ -63,15 +158,21 @@ export const usePendingApproval = () => {
         throw error;
       }
     },
+    enabled: false, // This prevents the query from running automatically
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
+  return {
+    ...query,
+    refetch: query.refetch,
+  };
 };
 
 export const UseDetailProfile = (id) => {
   const username = localStorage.getItem("username");
   const token_core = localStorage.getItem("token");
-
   const cleanTokenCore = token_core ? token_core.replace(/^"|"$/g, "") : null;
-
   return useQuery({
     queryKey: ["detail-profile", id, username, cleanTokenCore],
     queryFn: async () => {
@@ -112,59 +213,6 @@ export const UseDetailProfile = (id) => {
     },
   });
 };
-
-export const UseGetProfileByFaskes = () => {
-  const [userData, setUserData] = useState({
-    username: null,
-    token_core: null,
-    id_faskes: null,
-  });
-
-  useEffect(() => {
-    setUserData({
-      username: localStorage.getItem("username"),
-      token_core: localStorage.getItem("token"),
-      id_faskes: JSON.parse(localStorage.getItem("selectedFaskesId")),
-    });
-  }, []);
-
-  const cleanTokenCore = userData.token_core
-    ? userData.token_core.replace(/^"|"$/g, "")
-    : null;
-
-  return useQuery({
-    queryKey: ["Profil-By-Faskes", userData.username, cleanTokenCore, userData.id_faskes],
-    queryFn: async () => {
-      try {
-        const response = await api.post(
-          `profile/get-by-faskes?faskes_id=${userData.id_faskes}`,
-          {
-            username: username,
-          },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${cleanTokenCore}`,
-            },
-          }
-        );
-
-        // Check if the response is successful based on the code
-        if (response.data.code !== 200) {
-          throw new Error(response.data.message || "Failed to fetch profiles");
-        }
-
-        console.log("Response:", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("Error fetching profiles:", error);
-        throw error;
-      }
-    },
-  });
-};
-
 
 export const UseGetProfilePasienByNik = (nik, type) => {
   const [userData, setUserData] = useState({
@@ -234,8 +282,8 @@ export const UsePostProfilePasien = (nik, type, options = {}) => {
   }, []);
 
   const cleanTokenCore = userData.token_core
-  ? userData.token_core.replace(/^"|"$/g, "")
-  : null;
+    ? userData.token_core.replace(/^"|"$/g, "")
+    : null;
 
   return useMutation({
     mutationFn: async () => {
@@ -304,7 +352,13 @@ export const useCheckStatusPasien = (nik) => {
     : null;
 
   return useQuery({
-    queryKey: ["check-status-pasien", nik, userData.id_faskes, userData.username, cleanTokenCore],
+    queryKey: [
+      "check-status-pasien",
+      nik,
+      userData.id_faskes,
+      userData.username,
+      cleanTokenCore,
+    ],
     queryFn: async () => {
       try {
         const response = await api.post(
@@ -335,7 +389,8 @@ export const useCheckStatusPasien = (nik) => {
         throw error;
       }
     },
-    enabled: !!nik && !!userData.id_faskes && !!userData.username && !!cleanTokenCore,
+    enabled:
+      !!nik && !!userData.id_faskes && !!userData.username && !!cleanTokenCore,
   });
 };
 
