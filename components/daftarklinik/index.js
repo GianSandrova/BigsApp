@@ -23,6 +23,7 @@ export default function DaftarKlinik() {
   const [locationError, setLocationError] = useState(null);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false); 
   const router = useRouter();
 
   // Minimum swipe distance for detection (in pixels)
