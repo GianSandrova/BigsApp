@@ -33,8 +33,19 @@ export default function Profile() {
     }
   }, [isValid]);
 
-  const { data: pendingData, isLoading: pendingLoading } = usePendingApproval();
-  const { data: profileData, isLoading: profileLoading, refetch: refetchProfile } = UseGetProfileByFaskes();
+  const { 
+    data: profileData, 
+    isLoading: profileLoading, 
+    refetch: refetchProfile 
+  } = UseGetProfileByFaskes();
+  
+  const { 
+    data: pendingData, 
+    isLoading: pendingLoading,
+    refetch: refetchPending
+  } = usePendingApproval();
+  
+  
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -43,8 +54,10 @@ export default function Profile() {
   useEffect(() => {
     if (tabValue === 0) {
       refetchProfile();
+    } else if (tabValue === 1) {
+      refetchPending();
     }
-  }, [tabValue, refetchProfile]);
+  }, [tabValue, refetchProfile, refetchPending]);
 
   const renderContent = () => {
     if (showAuthMessage) {
