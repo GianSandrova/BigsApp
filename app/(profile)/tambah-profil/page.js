@@ -4,7 +4,7 @@ import { Modal } from '@/components/modal';
 import Offline from '@/components/offline';
 import { UseGetIsUser, checkUserAuthentication, useAuthenticatedRequest } from '@/service/auth.service';
 import { UseGetProfilePasienByNik, UsePostProfilePasien } from '@/service/pasien.service';
-import { JENIS_VALIDASI, PEMILIK } from '@/utils/constant';
+import { PEMILIK } from '@/utils/constant';
 import { CaretLeft, X } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -16,21 +16,10 @@ function TambahProfile() {
   const { isUser, isValid } = checkUserAuthentication();
   useAuthenticatedRequest(isValid);
 
-  const [jenisValidasi, setJenisValidasi] = useState('');
-  const [validasi, setValidasi] = useState('');
-  const [type, setType] = useState(''); // Tambahkan state untuk type
   const [show, setShow] = useState(false);
   const [getData, setGetData] = useState([]);
   const [loadingToastId, setLoadingToastId] = useState(null);
   const [nik, setNik] = useState('');
-
-  const handleOnChange = (e) => {
-    let selectedValue = e.target.value;
-    const validasiKey = Object.keys(JENIS_VALIDASI).find(key => JENIS_VALIDASI[key] === selectedValue);
-    setValidasi(validasiKey);
-    setJenisValidasi(selectedValue);
-    setType(validasiKey); // Tetapkan nilai type dari jenis validasi yang dipilih
-  };
 
   const handleCloseJadwal = () => resetForm();
 
@@ -39,7 +28,7 @@ function TambahProfile() {
     setGetData(null);
   };
 
-  const { data, isLoading, isError, error, refetch } = UseGetProfilePasienByNik(nik, type);
+  const { data, isLoading, isError, error, refetch } = UseGetProfilePasienByNik(nik, 'nik');
 
   useEffect(() => {
     if (data) {
@@ -67,12 +56,12 @@ function TambahProfile() {
     e.preventDefault();
     setLoadingToastId(toast.loading('Memuat data...'));
     const formSubmitData = new FormData(e.target);
-    const nikFromForm = formSubmitData.get(validasi); // Assuming 'validasi' contains the field name for NIK
+    const nikFromForm = formSubmitData.get('nik');
     setNik(nikFromForm);
-    refetch(); 
+    refetch();
   };
 
-  const { mutate: kirimPasien, isPending: pendingKirimPasien } = UsePostProfilePasien(nik,type, {
+  const { mutate: kirimPasien, isPending: pendingKirimPasien } = UsePostProfilePasien(nik, 'nik', {
     onSuccess: (data) => {
       toast.dismiss(loadingToastId);
       toast.success(data.message || "Profil pasien berhasil ditambahkan");
@@ -105,48 +94,40 @@ function TambahProfile() {
             </Link>
           </section>
           <section className='m-2 mt-4'>
-          <div className='w-full bg-white rounded-[5px] shadow-custom p-3 mt-5'>
-            <div className="flex flex-col gap-2">
-              <form onSubmit={onValidasi}>
-                <div className="space-y-3">
-                  <FormRowSelect
-                    name="pemilik"
-                    labelText="Pemilik"
-                    list={["-- Pilih --", ...Object.values(PEMILIK)]}
-                    className="w-full text-sm"
-                  />
-                  <FormRowSelect
-                    name="jenisValidasi"
-                    labelText="Jenis Validasi"
-                    onChange={(e) => handleOnChange(e)}
-                    list={["-- Pilih --", ...Object.values(JENIS_VALIDASI)]}
-                    className="w-full text-sm"
-                  />
-                  <FormRow
-                    type="input"
-                    name={validasi}
-                    labelText={`Masukkan ${jenisValidasi}`}
-                    className="w-full text-sm"
-                  />
-                  <div className="pt-2">
-                    <button
-                      type='submit'
-                      className='bg-primary1 p-2 w-full transition text-center rounded-[5px] font-normal text-xs sm:text-sm text-white'
-                      disabled={isLoading}
-                    >
-                      Tautkan
-                    </button>
+            <div className='w-full bg-white rounded-[5px] shadow-custom p-3 mt-5'>
+              <div className="flex flex-col gap-2">
+                <form onSubmit={onValidasi}>
+                  <div className="space-y-3">
+                    <FormRowSelect
+                      name="pemilik"
+                      labelText="Pemilik"
+                      list={["-- Pilih --", ...Object.values(PEMILIK)]}
+                      className="w-full text-sm"
+                    />
+                    <FormRow
+                      type="input"
+                      name="nik"
+                      labelText="Masukkan NIK"
+                      className="w-full text-sm"
+                    />
+                    <div className="pt-2">
+                      <button
+                        type='submit'
+                        className='bg-primary1 p-2 w-full transition text-center rounded-[5px] font-normal text-xs sm:text-sm text-white'
+                        disabled={isLoading}
+                      >
+                        Tautkan
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
         </div>
       </div>
 
       <Modal open={show && getData && Object.keys(getData).length > 0} onClose={() => setShow(false)}>
-      {console.log("Modal getData:", getData)}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center pb-2 border-b-2">
             <div className="text-base">Konfirmasi Data</div>
@@ -180,12 +161,6 @@ function TambahProfile() {
                       <td>Tanggal Lahir :</td>
                       <td>
                         <FormRow type="input" value={getData?.tanggal_lahir || ""} name={"tanggal_lahir"} readOnly={true} inputStyle={"border-none shadow-none"} />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>No Rekam Medis :</td>
-                      <td>
-                        <FormRow type="input" value={getData?.no_rm || ""} name={"tanggal_lahir"} readOnly={true} inputStyle={"border-none shadow-none"} />
                       </td>
                     </tr>
                   </tbody>
