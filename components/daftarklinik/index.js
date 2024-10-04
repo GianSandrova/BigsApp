@@ -13,6 +13,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useGetAllFaskes } from "@/service/klinik.service";
 import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
+import { Toaster, toast } from 'sonner'; 
 
 export default function DaftarKlinik() {
   const [active, setActive] = useState(1);
@@ -30,10 +31,19 @@ export default function DaftarKlinik() {
   const klinikLoginMutation = useKlinikLogin({
     onSuccess: (data) => {
       console.log("Login successful:", data);
+      setIsLoggingIn(false);
+      toast.success('Login berhasil');
       router.push("/home");
     },
     onError: (error) => {
       console.error("Login failed:", error);
+      setIsLoggingIn(false);
+      const errorMessage = error?.response?.data?.message || 
+                          error?.message || 
+                          'Gagal login ke klinik. Silahkan coba lagi.';
+      toast.error(errorMessage, {
+        description: 'Pastikan kredensial API sudah benar'
+      });
     },
   });
 
@@ -150,11 +160,13 @@ export default function DaftarKlinik() {
 
   return (
     <div className="px-4 sm:px-10">
+      <Toaster richColors position="top-center" expand={true} />
       {locationError && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
           <p>{locationError}</p>
         </div>
       )}
+      
       {clinics.length > 0 && (
         <div className="grid grid-cols-1 gap-4">
           <div
@@ -174,14 +186,21 @@ export default function DaftarKlinik() {
                   </p>
                 )}
               </CardHeader>
-              <CardBody className="overflow-visible py-2">
+              <CardBody className="overflow-visible py-2 relative">
                 <Image
                   alt="Card background"
-                  className="object-cover rounded-xl w-full h-64 cursor-pointer"
+                  className={`object-cover rounded-xl w-full h-64 ${
+                    isLoggingIn ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
+                  }`}
                   src={clinics[active - 1].logo}
                   width={270}
                   onClick={() => handleLogoClick(clinics[active - 1].id)}
                 />
+                {isLoggingIn && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                  </div>
+                )}
               </CardBody>
               <CardFooter>
                 <Link
