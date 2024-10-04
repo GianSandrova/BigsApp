@@ -33,33 +33,18 @@ export default function Profile() {
     }
   }, [isValid]);
 
-  const { 
-    data: profileData, 
-    isLoading: profileLoading, 
-    refetch: refetchProfile 
-  } = UseGetProfileByFaskes();
-  
-  const { 
-    data: pendingData, 
-    isLoading: pendingLoading,
-    refetch: refetchPending
-  } = usePendingApproval();
-  
-  
+  const { data: pendingData, isLoading: pendingLoading } = usePendingApproval();
+  const { data: profileData, isLoading: profileLoading, refetch: refetchProfile } = UseGetProfileByFaskes();
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
   useEffect(() => {
-    if (tabValue === 1) {
-      refetchPending();
-    }
-  }, [tabValue, refetchPending]);
-  
-  useEffect(() => {
+  if (tabValue === 0) {
     refetchProfile();
-  }, []);
+  }
+}, [tabValue, refetchProfile]);
 
   const renderContent = () => {
     if (showAuthMessage) {
