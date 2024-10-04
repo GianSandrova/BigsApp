@@ -149,7 +149,7 @@ export default function DaftarKlinik() {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="px-4 sm:px-10">
+    <div className="px-4 sm:px-10 flex justify-center">
       {locationError && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
           <p>{locationError}</p>
@@ -163,7 +163,7 @@ export default function DaftarKlinik() {
             onTouchEnd={onTouchEnd}
             className="w-full"
           >
-            <Card className="py-4 mx-auto max-w-sm">
+            <Card className="py-4 mx-auto max-w-sm w-full">
               <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                 <h4 className="font-bold text-large">
                   {clinics[active - 1].nama_faskes}
