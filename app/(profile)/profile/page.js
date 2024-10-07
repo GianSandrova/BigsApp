@@ -52,6 +52,12 @@ export default function Profile() {
   };
 
   useEffect(() => {
+    if (isValid) {
+      refetchProfile();
+    }
+  }, [isValid, refetchProfile]);
+
+  useEffect(() => {
     if (tabValue === 0) {
       refetchProfile();
     } else if (tabValue === 1) {

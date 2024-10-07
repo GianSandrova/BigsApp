@@ -89,7 +89,7 @@ export const UseGetProfileByFaskes = () => {
         throw error;
       }
     },
-    enabled: false, // This prevents the query from running automatically
+    enabled: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
