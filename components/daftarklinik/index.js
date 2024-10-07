@@ -32,7 +32,6 @@ export default function DaftarKlinik() {
     onSuccess: (data) => {
       console.log("Login successful:", data);
       setIsLoggingIn(false);
-      toast.success("Login berhasil");
       router.push("/home");
     },
     onError: (error) => {
