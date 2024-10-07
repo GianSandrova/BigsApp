@@ -58,9 +58,7 @@ export default function Profile() {
   }, [isValid, refetchProfile]);
 
   useEffect(() => {
-    if (tabValue === 0) {
-      refetchProfile();
-    } else if (tabValue === 1) {
+    if (tabValue === 1) {
       refetchPending();
     }
   }, [tabValue, refetchProfile, refetchPending]);
