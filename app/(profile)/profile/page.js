@@ -61,7 +61,7 @@ export default function Profile() {
     if (tabValue === 1) {
       refetchPending();
     }
-  }, [tabValue, refetchProfile, refetchPending]);
+  }, [tabValue, refetchPending]);
 
   const renderContent = () => {
     if (showAuthMessage) {
