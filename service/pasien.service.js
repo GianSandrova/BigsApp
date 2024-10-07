@@ -158,10 +158,6 @@ export const usePendingApproval = () => {
         throw error;
       }
     },
-    enabled: false, // This prevents the query from running automatically
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
   });
   return {
     ...query,
