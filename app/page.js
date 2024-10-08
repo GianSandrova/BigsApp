@@ -70,7 +70,7 @@ export default function Example() {
         <>
           <div className="bg-primary1 w-full h-[180px] -z-10 absolute top-0 left-0 right-0"></div>
           <div className="px-2 h-screen flex flex-col">
-            <section className="mt-5">
+            <section className="mt-5 mb-10">
               <div className="flex flex-row items-center justify-between px-4">
                 <div className="w-1/4">
                   <Logo />
@@ -81,7 +81,7 @@ export default function Example() {
                 <div className="w-1/4"></div>
               </div>
             </section>
-            <section className="m-15">
+            <section className="mb-6">
               <Search
                 onChange={(e) => setSearch(e.target.value)}
                 value={search}
