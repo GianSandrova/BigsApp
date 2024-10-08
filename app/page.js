@@ -150,7 +150,7 @@ export default function Example() {
                 <button
                   type="submit"
                   onClick={handleClick}
-                  className="bg-primary1 p-1 w-1/2 transition text-center rounded-[5px] font-normal text-[12px] text-white"
+                  className="bg-green-500 p-1 w-1/2 transition text-center rounded-[5px] font-normal text-[12px] text-white"
                 >
                   Next
                 </button>
