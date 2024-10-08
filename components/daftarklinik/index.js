@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
 import { toast } from "sonner";
 
-export default function DaftarKlinik() {
+export default function DaftarKlinik({ searchQuery = "" }) {
   const { data, isLoading, error } = useGetAllFaskes();
   const [clinics, setClinics] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
@@ -114,9 +114,10 @@ export default function DaftarKlinik() {
 
   useEffect(() => {
     if (data && Array.isArray(data.data)) {
-      console.log("Raw data:", data.data); // Debugging line
+      let processedClinics = data.data;
+      
       if (userLocation) {
-        const clinicsWithDistance = data.data.map((clinic) => {
+        processedClinics = processedClinics.map((clinic) => {
           if (clinic.latitude && clinic.longitude) {
             const distance = calculateDistance(userLocation, {
               latitude: parseFloat(clinic.latitude),
@@ -127,17 +128,25 @@ export default function DaftarKlinik() {
           return { ...clinic, distance: null };
         });
 
-        const sortedClinics = clinicsWithDistance.sort((a, b) => {
+        processedClinics = processedClinics.sort((a, b) => {
           if (a.distance === null) return 1;
           if (b.distance === null) return -1;
           return a.distance - b.distance;
         });
-        setClinics(sortedClinics);
-      } else {
-        setClinics(data.data);
       }
+      
+      setClinics(processedClinics);
     }
   }, [data, userLocation]);
+
+  useEffect(() => {
+    if (clinics.length > 0) {
+      const filtered = clinics.filter((clinic) =>
+        clinic.nama_faskes.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredClinics(filtered);
+    }
+  }, [searchQuery, clinics]);
 
   function calculateDistance(point1, point2) {
     if (!point1 || !point2) return null;
@@ -191,7 +200,7 @@ export default function DaftarKlinik() {
         </div>
       )}
 
-      <div className="mt-15 px-4 max-w-lg mx-auto w-full">
+      <div className="mt-20 px-4 max-w-lg mx-auto w-full">
         <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
           <span>{userAddress}</span>
@@ -199,36 +208,42 @@ export default function DaftarKlinik() {
 
         {/* Faskes List */}
         <div className="space-y-4">
-          {clinics.map((clinic) => (
-            <div
-              key={clinic.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer"
-              onClick={() => handleLogoClick(clinic.id)}
-            >
-              <div className="flex items-center p-3">
-                <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                  <img
-                    src={clinic.logo}
-                    alt={clinic.nama_faskes}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="ml-4 flex-1">
-                  <h3 className="font-medium text-gray-900">
-                    {clinic.nama_faskes}
-                  </h3>
-                  <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
-                    <span>📍</span>
-                    <span>
-                      {clinic.distance
-                        ? `${clinic.distance.toFixed(2)} km`
-                        : " "}
-                    </span>
+          {filteredClinics.length > 0 ? (
+            filteredClinics.map((clinic) => (
+              <div
+                key={clinic.id}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer"
+                onClick={() => handleLogoClick(clinic.id)}
+              >
+                <div className="flex items-center p-3">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <img
+                      src={clinic.logo}
+                      alt={clinic.nama_faskes}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="ml-4 flex-1">
+                    <h3 className="font-medium text-gray-900">
+                      {clinic.nama_faskes}
+                    </h3>
+                    <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
+                      <span>📍</span>
+                      <span>
+                        {clinic.distance
+                          ? `${clinic.distance.toFixed(2)} km`
+                          : " "}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="text-center text-gray-500">
+              Tidak ada klinik yang sesuai dengan pencarian
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>
