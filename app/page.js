@@ -75,7 +75,7 @@ export default function Example() {
                 <div className="w-1/4">
                   <Logo />
                 </div>
-                <div className="w-1/2 text-center">
+                <div className="w-1/2 text-center pb-10">
                   <p className="text-md font-bold text-white">Pilihan Faskes Kami</p>
                 </div>
                 <div className="w-1/4"></div>
