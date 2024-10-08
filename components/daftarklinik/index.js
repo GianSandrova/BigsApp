@@ -272,7 +272,7 @@ export default function DaftarKlinik() {
         {/* Faskes List */}
         <div className="space-y-4">
             <div 
-              key={faskes.id}
+              key={clinics.id}
               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
             >
               <div className="flex items-center p-3">
