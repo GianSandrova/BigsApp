@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -67,17 +67,84 @@ export default function Example() {
                 <Logo />
               </div>
               <div className="w-1/2 text-center">
-                <h2 className="text-xl font-bold">Nusalima Medika</h2>
+                <p className="text-xl font-bold">Faskes Kami</p>
               </div>
               <div className="w-1/4"></div>
             </div>
           </section>
-          <section className="">
-            <div className="grid grid-cols-1 gap-2 justify-between items-center p-3 text-center mt-5">
-              <h2>Selamat datang di Nusalima Medika</h2>
-              <p>
-                Sebelum melanjutkan harap pilih dulu klinik yang ingin dituju
-              </p>
+
+          <section>
+            <div className="relative mt-2 flex justify-center">
+              <div className="w-1/2 relative">
+                <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                  <span className="flex items-center">
+                    <span className="ml-3 block truncate">
+                      {selectedFaskes?.nama_faskes || "Pilih Faskes"}
+                    </span>
+                  </span>
+                  <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                    <ChevronUpDownIcon
+                      className="h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </ListboxButton>
+
+                <ListboxOptions className="absolute z-50 mt-1 w-full max-h-56 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {faskesOptions.map((faskes) => (
+                    <ListboxOption
+                      key={faskes.id}
+                      className={({ active }) =>
+                        classNames(
+                          active ? "bg-indigo-600 text-white" : "text-gray-900",
+                          "relative cursor-default select-none py-2 pl-3 pr-9"
+                        )
+                      }
+                      value={faskes}
+                    >
+                      {({ selected, active }) => (
+                        <>
+                          <div className="flex items-center">
+                            <span
+                              className={classNames(
+                                selected ? "font-semibold" : "font-normal",
+                                "ml-3 block truncate"
+                              )}
+                            >
+                              {faskes.nama_faskes}
+                            </span>
+                          </div>
+
+                          {selected ? (
+                            <span
+                              className={classNames(
+                                active ? "text-white" : "text-indigo-600",
+                                "absolute inset-y-0 right-0 flex items-center pr-4"
+                              )}
+                            >
+                              <CheckIcon
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
+                            </span>
+                          ) : null}
+                        </>
+                      )}
+                    </ListboxOption>
+                  ))}
+                </ListboxOptions>
+              </div>
+            </div>
+          </section>
+          <section>
+            <div className="flex justify-center pt-2 w-full">
+              <button
+                type="submit"
+                onClick={handleClick}
+                className="bg-primary1 p-1 w-1/2 transition text-center rounded-[5px] font-normal text-[12px] text-white"
+              >
+                Next
+              </button>
             </div>
           </section>
           <section className="flex justify-center">

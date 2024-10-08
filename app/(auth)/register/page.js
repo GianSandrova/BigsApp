@@ -73,8 +73,8 @@ function Register() {
                     <div className='text-base font-medium text-center text-gray my-3'>Daftar Untuk Menggunakan BigsGo</div>
                     <form onSubmit={onSubmit}>
                         <FormRow type="username" name="username" labelText="Username" value={formData.username} onChange={handleChange} style={"mb-2"} />
-                        <FormRow type="password" name="password" labelText="Password" value={formData.password} onChange={handleChange} style={"mb-2"} />
                         <FormRow type="email" name="email" labelText="Email" value={formData.email} onChange={handleChange} style={"mb-2"} />
+                        <FormRow type="password" name="password" labelText="Password" value={formData.password} onChange={handleChange} style={"mb-2"} />
                         <FormRow type="no_telepon" name="no_telepon" labelText="No Telepon" value={formData.no_telepon} onChange={handleChange} style={"mb-2"} />
                         {/* <FormRow type="password" name="repeatPassword" labelText="Repeat Password" value={formData.repeatPassword} onChange={handleChange} style={"mb-2"} /> */}
                         <div className="mt-3">
