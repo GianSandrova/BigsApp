@@ -68,7 +68,7 @@ export default function Example() {
     <Listbox value={selectedFaskes} onChange={handleFaskesChange}>
       {({ open }) => (
         <>
-        <div className="bg-primary1 text-white p-4 fixed top-0 left-0 right-0 z-10">
+        <div className="bg-primary1 text-white p-4 fixed top-0 left-0 right-0 z-10"></div>
           <div className="px-2 h-screen flex flex-col">
             <section className="mt-5 mb-10">
               <div className="flex flex-row items-center justify-between px-4">
@@ -90,7 +90,6 @@ export default function Example() {
                 placeholder="Cari Faskes"
               />
             </section>
-          </div>
             <section className="px-2 mt-15 flex-1 overflow-y-auto">
               <DaftarKlinik searchQuery={search} />
             </section>
