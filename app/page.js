@@ -53,7 +53,7 @@ export default function Example() {
       if (isClient) {
         localStorage.setItem("selectedFaskesId", selectedFaskes.id);
       }
-      router.push("/");
+      router.push("/home");
     } else {
       alert("Silakan pilih klinik terlebih dahulu");
     }
