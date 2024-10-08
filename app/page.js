@@ -68,7 +68,7 @@ export default function Example() {
     <Listbox value={selectedFaskes} onChange={handleFaskesChange}>
       {({ open }) => (
         <>
-          <div className="bg-primary1 w-full h-[200px] -z-10 absolute top-0 left-0 right-0"></div>
+          <div className="bg-primary1 w-full h-[180px] -z-10 absolute top-0 left-0 right-0"></div>
           <div className="px-2">
             <section className="mt-5">
               <div className="flex flex-row items-center justify-between px-4">
@@ -81,7 +81,7 @@ export default function Example() {
                 <div className="w-1/4"></div>
               </div>
             </section>
-            <section className="m-2 mt-4">
+            <section className="m-2 mt-15">
               <Search
                 onChange={(e) => setSearch(e.target.value)}
                 value={search}
@@ -94,10 +94,10 @@ export default function Example() {
             </div>
             </section> */}
 
-            <section className="px-2">
-              <div className="mt-5 flex justify-center text-center">
+            <section className="px-2 mt-10">
+              {/* <div className="mt-5 flex justify-center text-center">
                 Daftar Klinik Yang Tersedia
-              </div>
+              </div> */}
               <DaftarKlinik />
             </section>
           </div>
