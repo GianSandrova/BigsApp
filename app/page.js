@@ -66,104 +66,110 @@ export default function Example() {
     <Listbox value={selectedFaskes} onChange={handleFaskesChange}>
       {({ open }) => (
         <>
-          <section className="pt-5">
-            <div className="flex flex-row items-center justify-between px-4">
-              <div className="w-1/4">
-                <Logo />
+          <Offline />
+          <div className="bg-primary1 w-full h-[200px] -z-10 absolute top-0 left-0 right-0"></div>
+          <div className="px-2">
+            <section className="pt-5">
+              <div className="flex flex-row items-center justify-between px-4">
+                <div className="w-1/4">
+                  <Logo />
+                </div>
+                <div className="w-1/2 text-center">
+                  <p className="text-md font-bold">Pilih Faskes</p>
+                </div>
+                <div className="w-1/4"></div>
               </div>
-              <div className="w-1/2 text-center">
-                <p className="text-xl font-bold">Faskes Kami</p>
-              </div>
-              <div className="w-1/4"></div>
-            </div>
-          </section>
+            </section>
 
-          <section>
-            <div className="relative mt-2 flex justify-center">
-              <div className="w-1/2 relative">
-                <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
-                  <span className="flex items-center">
-                    <span className="ml-3 block truncate">
-                      {selectedFaskes?.nama_faskes || "Pilih Faskes"}
+            <section>
+              <div className="relative mt-2 flex justify-center">
+                <div className="w-1/2 relative">
+                  <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                    <span className="flex items-center">
+                      <span className="ml-3 block truncate">
+                        {selectedFaskes?.nama_faskes || "Pilih Faskes"}
+                      </span>
                     </span>
-                  </span>
-                  <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </ListboxButton>
+                    <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                      <ChevronUpDownIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </ListboxButton>
 
-                <ListboxOptions className="absolute z-50 mt-1 w-full max-h-56 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                  {faskesOptions.map((faskes) => (
-                    <ListboxOption
-                      key={faskes.id}
-                      className={({ active }) =>
-                        classNames(
-                          active ? "bg-indigo-600 text-white" : "text-gray-900",
-                          "relative cursor-default select-none py-2 pl-3 pr-9"
-                        )
-                      }
-                      value={faskes}
-                    >
-                      {({ selected, active }) => (
-                        <>
-                          <div className="flex items-center">
-                            <span
-                              className={classNames(
-                                selected ? "font-semibold" : "font-normal",
-                                "ml-3 block truncate"
-                              )}
-                            >
-                              {faskes.nama_faskes}
-                            </span>
-                          </div>
+                  <ListboxOptions className="absolute z-50 mt-1 w-full max-h-56 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                    {faskesOptions.map((faskes) => (
+                      <ListboxOption
+                        key={faskes.id}
+                        className={({ active }) =>
+                          classNames(
+                            active
+                              ? "bg-indigo-600 text-white"
+                              : "text-gray-900",
+                            "relative cursor-default select-none py-2 pl-3 pr-9"
+                          )
+                        }
+                        value={faskes}
+                      >
+                        {({ selected, active }) => (
+                          <>
+                            <div className="flex items-center">
+                              <span
+                                className={classNames(
+                                  selected ? "font-semibold" : "font-normal",
+                                  "ml-3 block truncate"
+                                )}
+                              >
+                                {faskes.nama_faskes}
+                              </span>
+                            </div>
 
-                          {selected ? (
-                            <span
-                              className={classNames(
-                                active ? "text-white" : "text-indigo-600",
-                                "absolute inset-y-0 right-0 flex items-center pr-4"
-                              )}
-                            >
-                              <CheckIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          ) : null}
-                        </>
-                      )}
-                    </ListboxOption>
-                  ))}
-                </ListboxOptions>
+                            {selected ? (
+                              <span
+                                className={classNames(
+                                  active ? "text-white" : "text-indigo-600",
+                                  "absolute inset-y-0 right-0 flex items-center pr-4"
+                                )}
+                              >
+                                <CheckIcon
+                                  className="h-5 w-5"
+                                  aria-hidden="true"
+                                />
+                              </span>
+                            ) : null}
+                          </>
+                        )}
+                      </ListboxOption>
+                    ))}
+                  </ListboxOptions>
+                </div>
               </div>
-            </div>
-          </section>
-          <section>
-            <div className="flex justify-center pt-2 w-full">
-              <button
-                type="submit"
-                onClick={handleClick}
-                className="bg-primary1 p-1 w-1/2 transition text-center rounded-[5px] font-normal text-[12px] text-white"
-              >
-                Next
-              </button>
-            </div>
-          </section>
-          <section className="flex justify-center">
+            </section>
+            <section>
+              <div className="flex justify-center pt-2 w-full">
+                <button
+                  type="submit"
+                  onClick={handleClick}
+                  className="bg-primary1 p-1 w-1/2 transition text-center rounded-[5px] font-normal text-[12px] text-white"
+                >
+                  Next
+                </button>
+              </div>
+            </section>
+            {/* <section className="flex justify-center">
             <div className="p-1 font-bold text-lg text-center text-black">
               Pilih Klinik
             </div>
-          </section>
+            </section> */}
 
-          <section>
-            <div className="mt-5 flex justify-center text-center">
-              Daftar Klinik Yang Tersedia
-            </div>
-            <DaftarKlinik />
-          </section>
+            <section>
+              <div className="mt-5 flex justify-center text-center">
+                Daftar Klinik Yang Tersedia
+              </div>
+              <DaftarKlinik />
+            </section>
+          </div>
         </>
       )}
     </Listbox>
