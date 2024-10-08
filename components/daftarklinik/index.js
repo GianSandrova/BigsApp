@@ -214,21 +214,23 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="ml-4 flex-1">
-                    <h3 className="font-medium text-gray-900">
-                      {clinic.nama_faskes}
-                    </h3>
-                    <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
-                      <span>📍</span>
-                      <span>
-                        {clinic.distance
-                          ? `${clinic.distance.toFixed(2)} km`
-                          : " "}
-                      </span>
+                  <div className="ml-4 flex-1 flex justify-between items-center">
+                    <div>
+                      <h3 className="font-medium text-gray-900">
+                        {clinic.nama_faskes}
+                      </h3>
+                      <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
+                        <span>📍</span>
+                        <span>
+                          {clinic.distance
+                            ? `${clinic.distance.toFixed(2)} km`
+                            : "Jarak tidak tersedia"}
+                        </span>
+                      </div>
                     </div>
                     <button
                       onClick={() => handleSelectClinic(clinic.id)}
-                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
                       disabled={isLoggingIn}
                     >
                       {isLoggingIn ? "Memilih..." : "Pilih"}
