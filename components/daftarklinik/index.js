@@ -150,7 +150,7 @@ export default function DaftarKlinik() {
         </div>
       )}
       
-      <div className="mt-32 px-4 max-w-lg mx-auto w-full">
+      <div className="mt-15 px-4 max-w-lg mx-auto w-full">
         <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
           <span>HCM9+RWW, Umban Sari</span>
