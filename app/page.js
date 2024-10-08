@@ -66,7 +66,6 @@ export default function Example() {
     <Listbox value={selectedFaskes} onChange={handleFaskesChange}>
       {({ open }) => (
         <>
-          <Offline />
           <div className="bg-primary1 w-full h-[200px] -z-10 absolute top-0 left-0 right-0"></div>
           <div className="px-2">
             <section className="pt-5">
