@@ -7,6 +7,7 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import Logo from "@/components/logo";
 import DaftarKlinik from "@/components/daftarklinik";
 import { useGetAllFaskes } from "@/service/klinik.service";
