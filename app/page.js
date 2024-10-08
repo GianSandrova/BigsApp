@@ -69,13 +69,13 @@ export default function Example() {
       {({ open }) => (
         <>
           <div className="bg-primary1 w-full h-[180px] -z-10 absolute top-0 left-0 right-0"></div>
-          <div className="px-2">
+          <div className="px-2 h-screen flex flex-col">
             <section className="mt-5">
               <div className="flex flex-row items-center justify-between px-4">
                 <div className="w-1/4">
                   <Logo />
                 </div>
-                <div className="w-1/2 text-center pb-10">
+                <div className="w-1/2 text-center">
                   <p className="text-md font-bold text-white">Pilihan Faskes Kami</p>
                 </div>
                 <div className="w-1/4"></div>
@@ -88,16 +88,8 @@ export default function Example() {
                 placeholder="Cari Faskes"
               />
             </section>
-            {/* <section className="flex justify-center">
-            <div className="p-1 font-bold text-lg text-center text-black">
-              Pilih Klinik
-            </div>
-            </section> */}
-
-            <section className="px-2 mt-15">
-              {/* <div className="mt-5 flex justify-center text-center">
-                Daftar Klinik Yang Tersedia
-              </div> */}
+  
+            <section className="px-2 mt-15 flex-1 overflow-y-auto">
               <DaftarKlinik />
             </section>
           </div>
