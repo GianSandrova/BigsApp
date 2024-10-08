@@ -65,38 +65,32 @@ export default function Example() {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <Listbox value={selectedFaskes} onChange={handleFaskesChange}>
-      {({ open }) => (
-        <>
-          <div className="bg-primary1 w-full h-[185px] -z-10 absolute top-0 left-0 right-0"></div>
-          <div className="px-2 h-screen flex flex-col">
-            <section className="mt-5 mb-10">
-              <div className="flex flex-row items-center justify-between px-4">
-                <div className="w-1/4">
-                  <Logo />
-                </div>
-                <div className="w-1/2 text-center">
-                  <p className="text-md font-semibold text-white">
-                    Pilihan Faskes Kami
-                  </p>
-                </div>
-                <div className="w-1/4"></div>
-              </div>
-            </section>
-            <section className="mb-6">
-              <Search
-                onChange={(e) => setSearch(e.target.value)}
-                value={search}
-                placeholder="Cari Faskes"
-              />
-            </section>
-
-            <section className="px-2 mt-15 flex-1 overflow-y-auto">
-              <DaftarKlinik searchQuery={search} />
-            </section>
+    <div className="min-h-screen bg-gray-100">
+      <div className="bg-teal-600 pb-6">
+        <div className="container mx-auto px-4 pt-6">
+          <div className="flex items-center justify-between">
+            <Logo className="w-24" />
+            <h1 className="text-xl font-semibold text-white">
+              Pilihan Faskes Kami
+            </h1>
+            <div className="w-24"></div>
           </div>
-        </>
-      )}
-    </Listbox>
+        </div>
+      </div>
+      
+      <div className="sticky top-0 bg-white shadow-md z-10">
+        <div className="container mx-auto px-4 py-4">
+          <Search
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            placeholder="Cari Faskes"
+          />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-6">
+        <DaftarKlinik searchQuery={search} />
+      </div>
+    </div>
   );
 }
