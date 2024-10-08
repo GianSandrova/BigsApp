@@ -73,14 +73,14 @@ export default function Example() {
                 <div className="w-1/4">
                   <Logo />
                 </div>
-                <div className="w-1/2 text-center mt-10">
+                <div className="w-1/2 text-center">
                   <p className="text-md font-bold text-white">Pilih Faskes</p>
                 </div>
                 <div className="w-1/4"></div>
               </div>
             </section>
 
-            <section className="m-2 mt-4">
+            <section className="m-2 mt-15">
               <div className="relative mt-2 flex justify-center">
                 <div className="w-1/2 relative">
                   <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
