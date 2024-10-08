@@ -68,7 +68,7 @@ export default function Example() {
         <>
           <div className="bg-primary1 w-full h-[200px] -z-10 absolute top-0 left-0 right-0"></div>
           <div className="px-2">
-            <section className="pt-5">
+            <section className="mt-5">
               <div className="flex flex-row items-center justify-between px-4">
                 <div className="w-1/4">
                   <Logo />
@@ -80,7 +80,7 @@ export default function Example() {
               </div>
             </section>
 
-            <section>
+            <section className="m-2 mt-4">
               <div className="relative mt-2 flex justify-center">
                 <div className="w-1/2 relative">
                   <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
@@ -162,7 +162,7 @@ export default function Example() {
             </div>
             </section> */}
 
-            <section>
+            <section className="px-2">
               <div className="mt-5 flex justify-center text-center">
                 Daftar Klinik Yang Tersedia
               </div>
