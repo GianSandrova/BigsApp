@@ -12,6 +12,7 @@ import Logo from "@/components/logo";
 import DaftarKlinik from "@/components/daftarklinik";
 import { useGetAllFaskes } from "@/service/klinik.service";
 import { useAuthToken } from "@/hooks/useAuthToken";
+import { Search } from "@/components/search";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -23,6 +24,7 @@ export default function Example() {
   const [selectedFaskes, setSelectedFaskes] = useState(null);
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     setIsClient(true);
