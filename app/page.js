@@ -44,6 +44,10 @@ export default function Example() {
     }
   };
 
+  const faskesOptions = useMemo(() => {
+    return data?.data || [];
+  }, [data]);
+
   function handleClick() {
     if (selectedFaskes) {
       if (isClient) {
