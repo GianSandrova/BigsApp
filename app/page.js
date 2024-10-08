@@ -90,7 +90,7 @@ export default function Example() {
             </section>
   
             <section className="px-2 mt-15 flex-1 overflow-y-auto">
-              <DaftarKlinik />
+              <DaftarKlinik searchQuery={search}/>
             </section>
           </div>
         </>
