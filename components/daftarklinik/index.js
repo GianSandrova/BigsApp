@@ -4,6 +4,7 @@ import { useGetAllFaskes } from "@/service/klinik.service";
 import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
 import { toast } from "sonner";
+import { MapPin } from "lucide-react";
 
 export default function DaftarKlinik({ searchQuery = "" }) {
   const { data, isLoading, error } = useGetAllFaskes();
@@ -12,8 +13,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  // const [userAddress, setUserAddress] = useState(" ");
-  // const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+
   const router = useRouter();
 
   const klinikLoginMutation = useKlinikLogin({
@@ -211,7 +211,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                   {clinic.nama_faskes}
                 </h3>
                 <div className="flex items-center gap-1 mt-1 text-gray-500 text-sm">
-                <FontAwesomeIcon icon="fa-solid fa-map-pin size-16" />
+                  <MapPin size={16} />
                   <span>
                     {clinic.distance
                       ? `${clinic.distance.toFixed(2)} km`
