@@ -12,8 +12,8 @@ export default function DaftarKlinik({ searchQuery = "" }) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [userAddress, setUserAddress] = useState("Mendapatkan lokasi...");
-  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  // const [userAddress, setUserAddress] = useState(" ");
+  // const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const router = useRouter();
 
   const klinikLoginMutation = useKlinikLogin({
@@ -65,29 +65,29 @@ export default function DaftarKlinik({ searchQuery = "" }) {
     },
   });
 
-  const getAddressFromCoordinates = async (latitude, longitude) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=id`
-      );
-      const data = await response.json();
+  // const getAddressFromCoordinates = async (latitude, longitude) => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=id`
+  //     );
+  //     const data = await response.json();
 
-      if (data.display_name) {
-        const addressParts = data.address;
-        const relevantAddress = [
-          addressParts.suburb,
-          addressParts.city_district,
-          addressParts.city,
-        ]
-          .filter(Boolean)
-          .join(", ");
+  //     if (data.display_name) {
+  //       const addressParts = data.address;
+  //       const relevantAddress = [
+  //         addressParts.suburb,
+  //         addressParts.city_district,
+  //         addressParts.city,
+  //       ]
+  //         .filter(Boolean)
+  //         .join(", ");
 
-        setUserAddress(relevantAddress);
-      }
-    } catch (error) {
-      console.error("Error getting address:", error);
-    }
-  };
+  //       setUserAddress(relevantAddress);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error getting address:", error);
+  //   }
+  // };
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -95,7 +95,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ latitude, longitude });
-          getAddressFromCoordinates(latitude, longitude);
+          // getAddressFromCoordinates(latitude, longitude);
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -116,7 +116,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
   useEffect(() => {
     if (data && Array.isArray(data.data)) {
       let processedClinics = data.data;
-      
+
       if (userLocation) {
         processedClinics = processedClinics.map((clinic) => {
           if (clinic.latitude && clinic.longitude) {
@@ -135,7 +135,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
           return a.distance - b.distance;
         });
       }
-      
+
       setClinics(processedClinics);
     }
   }, [data, userLocation]);
@@ -169,7 +169,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
     return deg * (Math.PI / 180);
   }
 
-  const handleLogoClick = (clinicId) => {
+  const handleSelectClinic = (clinicId) => {
     if (isLoggingIn) return;
 
     setIsLoggingIn(true);
@@ -181,7 +181,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
       setIsLoggingIn(false);
       toast.error("Login Gagal", {
         description: "Terjadi kesalahan saat mencoba login",
-        duration: 4000,
+        duration: 2000,
         position: "top-center",
       });
     }
@@ -192,8 +192,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
 
   return (
     <div className="px-4 sm:px-10">
-
-      <div className="mt-18 px-4 max-w-lg mx-auto w-full">
+      <div className="mt-20 px-4 max-w-lg mx-auto w-full">
         {/* <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
           <span>{userAddress}</span>
@@ -205,8 +204,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
             filteredClinics.map((clinic) => (
               <div
                 key={clinic.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer"
-                onClick={() => handleLogoClick(clinic.id)}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
               >
                 <div className="flex items-center p-3">
                   <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
@@ -228,6 +226,13 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                           : " "}
                       </span>
                     </div>
+                    <button
+                      onClick={() => handleSelectClinic(clinic.id)}
+                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                      disabled={isLoggingIn}
+                    >
+                      {isLoggingIn ? "Memilih..." : "Pilih"}
+                    </button>
                   </div>
                 </div>
               </div>
