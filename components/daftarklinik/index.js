@@ -229,43 +229,74 @@ export default function DaftarKlinik() {
         </div>
       )}
       {clinics.length > 0 && (
-        <div className="grid grid-cols-1 gap-4">
-          <Card className="py-4 mx-auto max-w-sm">
-            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-              <h4 className="font-bold text-large">
-                {clinics[active - 1].nama_faskes}
-              </h4>
-              {userLocation && (
-                <p className="text-small text-default-500">
-                  Jarak: {clinics[active - 1].distance?.toFixed(2)} km
-                </p>
-              )}
-            </CardHeader>
-            <CardBody className="overflow-visible py-2">
-              <Image
-                alt="Card background"
-                className="object-cover rounded-xl w-full h-64 cursor-pointer"
-                src={clinics[active - 1].logo}
-                width={270}
-                onClick={() => handleLogoClick(clinics[active - 1].id)}
-              />
-            </CardBody>
-            <CardFooter>
-              <Link
-                isExternal
-                showAnchorIcon
-                href={`https://www.google.com/maps/search/?api=1&query=${
-                  clinics[active - 1].latitude
-                },${clinics[active - 1].longitude}`}
-              >
-                Lihat Lokasi
-              </Link>
-            </CardFooter>
-          </Card>
+        // <div className="grid grid-cols-1 gap-4">
+        //   <Card className="py-4 mx-auto max-w-sm">
+        //     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+        //       <h4 className="font-bold text-large">
+        //         {clinics[active - 1].nama_faskes}
+        //       </h4>
+        //       {userLocation && (
+        //         <p className="text-small text-default-500">
+        //           Jarak: {clinics[active - 1].distance?.toFixed(2)} km
+        //         </p>
+        //       )}
+        //     </CardHeader>
+        //     <CardBody className="overflow-visible py-2">
+        //       <Image
+        //         alt="Card background"
+        //         className="object-cover rounded-xl w-full h-64 cursor-pointer"
+        //         src={clinics[active - 1].logo}
+        //         width={270}
+        //         onClick={() => handleLogoClick(clinics[active - 1].id)}
+        //       />
+        //     </CardBody>
+        //     <CardFooter>
+        //       <Link
+        //         isExternal
+        //         showAnchorIcon
+        //         href={`https://www.google.com/maps/search/?api=1&query=${
+        //           clinics[active - 1].latitude
+        //         },${clinics[active - 1].longitude}`}
+        //       >
+        //         Lihat Lokasi
+        //       </Link>
+        //     </CardFooter>
+        //   </Card>
+        // </div>
+        <div className="mt-32 px-4 max-w-lg mx-auto w-full">
+        <div className="flex items-center gap-2 text-gray-600 mb-4">
+          <div className="p-1">📍</div>
+          <span>HCM9+RWW, Umban Sari</span>
         </div>
+
+        {/* Faskes List */}
+        <div className="space-y-4">
+            <div 
+              key={faskes.id}
+              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+            >
+              <div className="flex items-center p-3">
+                <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                  <img
+                    src={clinics.logo}
+                    alt={clinics.nama_faskes}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="ml-4 flex-1">
+                  <h3 className="font-medium text-gray-900">{clinics.nama_faskes}</h3>
+                  <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
+                    <span>📍</span>
+                    <span>{clinics.distance?.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
       )}
 
-      <div className="flex items-center justify-center gap-4 mt-4">
+      {/* <div className="flex items-center justify-center gap-4 mt-4">
         <Button
           variant="text"
           className="flex items-center gap-2"
@@ -294,10 +325,10 @@ export default function DaftarKlinik() {
           <span className="hidden sm:inline">Next</span>
           <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
         </Button>
-      </div>
-      <p className="text-center mt-2 text-sm text-gray-500">
+      </div> */}
+      {/* <p className="text-center mt-2 text-sm text-gray-500">
         Page {active} of {totalPages}
-      </p>
+      </p> */}
     </div>
   );
 }
