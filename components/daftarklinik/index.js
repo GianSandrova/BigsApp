@@ -8,6 +8,7 @@ import { toast } from "sonner";
 export default function DaftarKlinik({ searchQuery = "" }) {
   const { data, isLoading, error } = useGetAllFaskes();
   const [clinics, setClinics] = useState([]);
+  const [filteredClinics, setFilteredClinics] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
