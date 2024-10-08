@@ -208,7 +208,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                 className="bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden"
               >
                 <div className="flex items-center p-3">
-                  <div className="w-21 h-21 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                     <img
                       src={clinic.logo}
                       alt={clinic.nama_faskes}
