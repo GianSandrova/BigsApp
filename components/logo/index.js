@@ -6,7 +6,7 @@ import logo from "@/public/assets/logo/logo.png"
 const Logo = () => {
     return (
         <>
-            <div className='flex justify-start bg-white'>
+            <div className='flex justify-start bg-'>
                 <Image src={logo} loading='lazy' height={100} width={100} alt='logo' />
             </div>
         </>

@@ -73,8 +73,8 @@ export default function Example() {
                 <div className="w-1/4">
                   <Logo />
                 </div>
-                <div className="w-1/2 text-center">
-                  <p className="text-md font-bold">Pilih Faskes</p>
+                <div className="w-1/2 text-center mt-10">
+                  <p className="text-md font-bold text-white">Pilih Faskes</p>
                 </div>
                 <div className="w-1/4"></div>
               </div>
@@ -150,7 +150,7 @@ export default function Example() {
                 <button
                   type="submit"
                   onClick={handleClick}
-                  className="bg-green-500 p-1 w-1/2 transition text-center rounded-[5px] font-normal text-[12px] text-white"
+                  className="bg-green-800 p-1 w-1/2 transition text-center rounded-[5px] font-normal text-[12px] text-white"
                 >
                   Next
                 </button>
