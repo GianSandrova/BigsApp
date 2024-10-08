@@ -187,6 +187,10 @@ export default function DaftarKlinik({ searchQuery = "" }) {
       });
     }
   };
+  
+  const handleGoogleMapsLink = (latitude, longitude) => {
+    return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -220,13 +224,24 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                       <h3 className="text-base font-normal text-gray-900">
                         {clinic.nama_faskes}
                       </h3>
-                      <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
-                        <MapPin size={16} />
-                        <span>
-                          {clinic.distance
-                            ? `${clinic.distance.toFixed(2)} km`
-                            : "Jarak tidak tersedia"}
-                        </span>
+                      <div className="flex items-center gap-1 mt-1 text-gray-500 text-xs">
+                        <MapPin size={12} />
+                        {clinic.distance ? (
+                          <Link
+                            href={handleGoogleMapsLink(
+                              clinic.latitude,
+                              clinic.longitude
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-blue-500 hover:underline"
+                          >
+                            {`${clinic.distance.toFixed(2)} km`}
+                            <ExternalLink size={10} />
+                          </Link>
+                        ) : (
+                          <span>Jarak tidak tersedia</span>
+                        )}
                       </div>
                     </div>
                     <button
