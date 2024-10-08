@@ -192,20 +192,12 @@ export default function DaftarKlinik({ searchQuery = "" }) {
 
   return (
     <div className="px-4 sm:px-10">
-      {locationError && (
-        <div
-          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
-          role="alert"
-        >
-          <p>{locationError}</p>
-        </div>
-      )}
 
-      <div className="mt-20 px-4 max-w-lg mx-auto w-full">
-        <div className="flex items-center gap-2 text-gray-600 mb-4">
+      <div className="mt-18 px-4 max-w-lg mx-auto w-full">
+        {/* <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
           <span>{userAddress}</span>
-        </div>
+        </div> */}
 
         {/* Faskes List */}
         <div className="space-y-4">
