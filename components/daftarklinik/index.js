@@ -192,8 +192,8 @@ export default function DaftarKlinik({ searchQuery = "" }) {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="px-4 sm:px-10">
-      <div className="mt-20 px-4 max-w-lg mx-auto w-full">
+    <div className="px-2 sm:px-5">
+      <div className="mt-20 px-2 max-w-lg mx-auto w-full">
         {/* <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
           <span>{userAddress}</span>
