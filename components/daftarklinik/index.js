@@ -1,33 +1,18 @@
 'use client';
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Link,
-  Image,
-} from "@nextui-org/react";
-import { Button } from "@material-tailwind/react";
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect } from "react";
 import { useGetAllFaskes } from "@/service/klinik.service";
 import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 export default function DaftarKlinik() {
-  const [active, setActive] = useState(1);
   const { data, isLoading, error } = useGetAllFaskes();
   const [clinics, setClinics] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
 
-  // Minimum swipe distance for detection (in pixels)
-  const minSwipeDistance = 50;
   const klinikLoginMutation = useKlinikLogin({
     onSuccess: (data) => {
       console.log("Login successful:", data);
@@ -37,80 +22,38 @@ export default function DaftarKlinik() {
     onError: (error) => {
       console.error("Login failed:", error);
       setIsLoggingIn(false);
-
       let errorMessage = "Terjadi kesalahan pada server";
 
       try {
-        // Handle different types of error responses
         if (error.response) {
           const status = error.response.status;
           const responseData = error.response.data;
 
-          // Specific handling for 500 errors
           if (status === 500) {
-            errorMessage =
-              responseData.message ||
-              "Internal Server Error: Terjadi kesalahan pada server";
-
-            // If there's a more detailed error structure
+            errorMessage = responseData.message || "Internal Server Error: Terjadi kesalahan pada server";
             if (responseData.error) {
               errorMessage = `${responseData.error}: ${responseData.message}`;
             }
+          } else {
+            errorMessage = responseData.message || responseData.error || `Error ${status}: ${error.response.statusText}`;
           }
-          // Handle other error status codes
-          else {
-            errorMessage =
-              responseData.message ||
-              responseData.error ||
-              `Error ${status}: ${error.response.statusText}`;
-          }
-        }
-        // Handle network errors
-        else if (error.request) {
-          errorMessage =
-            "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
-        }
-        // Handle other types of errors
-        else {
-          errorMessage =
-            error.message || "Terjadi kesalahan yang tidak diketahui";
+        } else if (error.request) {
+          errorMessage = "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
+        } else {
+          errorMessage = error.message || "Terjadi kesalahan yang tidak diketahui";
         }
       } catch (e) {
         errorMessage = "Terjadi kesalahan dalam memproses response error";
         console.error("Error while processing error response:", e);
       }
 
-      // Always show error toast
       toast.error("Login Gagal", {
         description: errorMessage,
-        duration: 6000, // Increased duration for better readability
+        duration: 6000,
         position: "top-center",
       });
     },
   });
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe && active < clinics.length) {
-      next();
-    } else if (isRightSwipe && active > 1) {
-      prev();
-    }
-  };
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -121,22 +64,19 @@ export default function DaftarKlinik() {
         },
         (error) => {
           console.error("Error getting user location:", error);
-          setLocationError(
-            "Failed to get your location. Distances won't be shown."
-          );
+          setLocationError("Failed to get your location. Distances won't be shown.");
           setUserLocation(null);
         }
       );
     } else {
-      setLocationError(
-        "Geolocation is not supported by your browser. Distances won't be shown."
-      );
+      setLocationError("Geolocation is not supported by your browser. Distances won't be shown.");
       setUserLocation(null);
     }
   }, []);
 
   useEffect(() => {
     if (data && Array.isArray(data.data)) {
+      console.log("Raw data:", data.data); // Debugging line
       if (userLocation) {
         const clinicsWithDistance = data.data.map((clinic) => {
           if (clinic.latitude && clinic.longitude) {
@@ -181,30 +121,14 @@ export default function DaftarKlinik() {
     return deg * (Math.PI / 180);
   }
 
-  const totalPages = clinics.length;
-
-  const next = () => {
-    if (active === totalPages) return;
-    setActive(active + 1);
-  };
-
-  const prev = () => {
-    if (active === 1) return;
-    setActive(active - 1);
-  };
-
   const handleLogoClick = (clinicId) => {
-    if (isLoggingIn) return; // Prevent multiple clicks while loading
+    if (isLoggingIn) return;
 
     setIsLoggingIn(true);
     localStorage.setItem("selectedFaskesId", clinicId);
 
-    const loginBody = {
-      faskes_id: clinicId,
-    };
-
     try {
-      klinikLoginMutation.mutate(loginBody);
+      klinikLoginMutation.mutate({ faskes_id: clinicId });
     } catch (error) {
       setIsLoggingIn(false);
       toast.error("Login Gagal", {
@@ -221,49 +145,12 @@ export default function DaftarKlinik() {
   return (
     <div className="px-4 sm:px-10">
       {locationError && (
-        <div
-          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
-          role="alert"
-        >
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
           <p>{locationError}</p>
         </div>
       )}
-      {clinics.length > 0 && (
-        // <div className="grid grid-cols-1 gap-4">
-        //   <Card className="py-4 mx-auto max-w-sm">
-        //     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-        //       <h4 className="font-bold text-large">
-        //         {clinics[active - 1].nama_faskes}
-        //       </h4>
-        //       {userLocation && (
-        //         <p className="text-small text-default-500">
-        //           Jarak: {clinics[active - 1].distance?.toFixed(2)} km
-        //         </p>
-        //       )}
-        //     </CardHeader>
-        //     <CardBody className="overflow-visible py-2">
-        //       <Image
-        //         alt="Card background"
-        //         className="object-cover rounded-xl w-full h-64 cursor-pointer"
-        //         src={clinics[active - 1].logo}
-        //         width={270}
-        //         onClick={() => handleLogoClick(clinics[active - 1].id)}
-        //       />
-        //     </CardBody>
-        //     <CardFooter>
-        //       <Link
-        //         isExternal
-        //         showAnchorIcon
-        //         href={`https://www.google.com/maps/search/?api=1&query=${
-        //           clinics[active - 1].latitude
-        //         },${clinics[active - 1].longitude}`}
-        //       >
-        //         Lihat Lokasi
-        //       </Link>
-        //     </CardFooter>
-        //   </Card>
-        // </div>
-        <div className="mt-32 px-4 max-w-lg mx-auto w-full">
+      
+      <div className="mt-32 px-4 max-w-lg mx-auto w-full">
         <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
           <span>HCM9+RWW, Umban Sari</span>
@@ -271,64 +158,32 @@ export default function DaftarKlinik() {
 
         {/* Faskes List */}
         <div className="space-y-4">
+          {clinics.map((clinic) => (
             <div 
-              key={clinics.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+              key={clinic.id}
+              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer"
+              onClick={() => handleLogoClick(clinic.id)}
             >
               <div className="flex items-center p-3">
                 <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                   <img
-                    src={clinics.logo}
-                    alt={clinics.nama_faskes}
+                    src={clinic.logo}
+                    alt={clinic.nama_faskes}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="ml-4 flex-1">
-                  <h3 className="font-medium text-gray-900">{clinics.nama_faskes}</h3>
+                  <h3 className="font-medium text-gray-900">{clinic.nama_faskes}</h3>
                   <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
                     <span>📍</span>
-                    <span>{clinics.distance?.toFixed(2)}</span>
+                    <span>{clinic.distance ? `${clinic.distance.toFixed(2)} km` : 'Jarak tidak tersedia'}</span>
                   </div>
                 </div>
               </div>
             </div>
-        </div>
-      </div>
-      )}
-
-      {/* <div className="flex items-center justify-center gap-4 mt-4">
-        <Button
-          variant="text"
-          className="flex items-center gap-2"
-          onClick={prev}
-          disabled={active === 1}
-        >
-          <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" />
-          <span className="hidden sm:inline">Previous</span>
-        </Button>
-        <div className="flex items-center">
-          {clinics.map((_, index) => (
-            <div
-              key={index}
-              className={`w-2 h-2 mx-1 rounded-full ${
-                active === index + 1 ? "bg-gray-900" : "bg-gray-300"
-              }`}
-            />
           ))}
         </div>
-        <Button
-          variant="text"
-          className="flex items-center gap-2"
-          onClick={next}
-          disabled={active === totalPages}
-        >
-          <span className="hidden sm:inline">Next</span>
-          <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
-        </Button>
-      </div> */}
-      {/* <p className="text-center mt-2 text-sm text-gray-500">
-        Page {active} of {totalPages}
-      </p> */}
+      </div>
     </div>
   );
 }
