@@ -193,7 +193,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
 
   return (
     <div className="px-1 sm:px-1">
-      <div className="mt-20 px-1 max-w-lg mx-auto w-full">
+      <div className="mt-17 px-1 max-w-lg mx-auto w-full">
         {/* <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
           <span>{userAddress}</span>
@@ -208,7 +208,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                 className="bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden"
               >
                 <div className="flex items-center p-3">
-                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                     <img
                       src={clinic.logo}
                       alt={clinic.nama_faskes}
