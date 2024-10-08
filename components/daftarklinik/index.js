@@ -13,7 +13,8 @@ export default function DaftarKlinik({ searchQuery = "" }) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
+  // const [userAddress, setUserAddress] = useState(" ");
+  // const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const router = useRouter();
 
   const klinikLoginMutation = useKlinikLogin({
@@ -191,49 +192,61 @@ export default function DaftarKlinik({ searchQuery = "" }) {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="space-y-4">
-      {filteredClinics.length > 0 ? (
-        filteredClinics.map((clinic) => (
-          <div
-            key={clinic.id}
-            className="bg-white rounded-xl shadow-md overflow-hidden"
-          >
-            <div className="flex items-center p-4">
-              <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                <img
-                  src={clinic.logo}
-                  alt={clinic.nama_faskes}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="ml-4 flex-1">
-                <h3 className="font-semibold text-lg text-gray-900">
-                  {clinic.nama_faskes}
-                </h3>
-                <div className="flex items-center gap-1 mt-1 text-gray-500 text-sm">
-                  <MapPin size={16} />
-                  <span>
-                    {clinic.distance
-                      ? `${clinic.distance.toFixed(2)} km`
-                      : "Jarak tidak tersedia"}
-                  </span>
+    <div className="px-4 sm:px-10">
+      <div className="mt-20 px-4 max-w-lg mx-auto w-full">
+        {/* <div className="flex items-center gap-2 text-gray-600 mb-4">
+          <div className="p-1">📍</div>
+          <span>{userAddress}</span>
+        </div> */}
+
+        {/* Faskes List */}
+        <div className="space-y-4">
+          {filteredClinics.length > 0 ? (
+            filteredClinics.map((clinic) => (
+              <div
+                key={clinic.id}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+              >
+                <div className="flex items-center p-3">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <img
+                      src={clinic.logo}
+                      alt={clinic.nama_faskes}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="ml-4 flex-1 flex justify-between items-center">
+                    <div>
+                      <h3 className="font-medium text-gray-900">
+                        {clinic.nama_faskes}
+                      </h3>
+                      <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
+                        <MapPin size={16} />
+                        <span>
+                          {clinic.distance
+                            ? `${clinic.distance.toFixed(2)} km`
+                            : "Jarak tidak tersedia"}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleSelectClinic(clinic.id)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                      disabled={isLoggingIn}
+                    >
+                      {isLoggingIn ? "Memilih..." : "Pilih"}
+                    </button>
+                  </div>
                 </div>
               </div>
-              <button
-                onClick={() => handleSelectClinic(clinic.id)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-                disabled={isLoggingIn}
-              >
-                {isLoggingIn ? "Memilih..." : "Pilih"}
-              </button>
+            ))
+          ) : (
+            <div className="text-center text-gray-500">
+              Tidak ada klinik yang sesuai dengan pencarian
             </div>
-          </div>
-        ))
-      ) : (
-        <div className="text-center text-gray-500 py-4">
-          Tidak ada klinik yang sesuai dengan pencarian
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
