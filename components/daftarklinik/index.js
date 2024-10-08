@@ -211,7 +211,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                   {clinic.nama_faskes}
                 </h3>
                 <div className="flex items-center gap-1 mt-1 text-gray-500 text-sm">
-                  <MapPin size={16} />
+                <FontAwesomeIcon icon="fa-solid fa-map-pin size-16" />
                   <span>
                     {clinic.distance
                       ? `${clinic.distance.toFixed(2)} km`
