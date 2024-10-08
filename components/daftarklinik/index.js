@@ -205,7 +205,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
             filteredClinics.map((clinic) => (
               <div
                 key={clinic.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+                className="bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden"
               >
                 <div className="flex items-center p-3">
                   <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
