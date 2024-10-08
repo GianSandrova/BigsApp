@@ -81,7 +81,7 @@ export default function Example() {
                 <div className="w-1/4"></div>
               </div>
             </section>
-            <section className="m-2 mt-15">
+            <section className="mt-15">
               <Search
                 onChange={(e) => setSearch(e.target.value)}
                 value={search}
@@ -94,7 +94,7 @@ export default function Example() {
             </div>
             </section> */}
 
-            <section className="px-2 mt-10">
+            <section className="px-2 mt-15">
               {/* <div className="mt-5 flex justify-center text-center">
                 Daftar Klinik Yang Tersedia
               </div> */}
