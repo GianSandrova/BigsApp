@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from "react";
 import { useGetAllFaskes } from "@/service/klinik.service";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,8 @@ export default function DaftarKlinik() {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [userAddress, setUserAddress] = useState("Mendapatkan lokasi...");
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const router = useRouter();
 
   const klinikLoginMutation = useKlinikLogin({
@@ -30,17 +32,24 @@ export default function DaftarKlinik() {
           const responseData = error.response.data;
 
           if (status === 500) {
-            errorMessage = responseData.message || "Internal Server Error: Terjadi kesalahan pada server";
+            errorMessage =
+              responseData.message ||
+              "Internal Server Error: Terjadi kesalahan pada server";
             if (responseData.error) {
               errorMessage = `${responseData.error}: ${responseData.message}`;
             }
           } else {
-            errorMessage = responseData.message || responseData.error || `Error ${status}: ${error.response.statusText}`;
+            errorMessage =
+              responseData.message ||
+              responseData.error ||
+              `Error ${status}: ${error.response.statusText}`;
           }
         } else if (error.request) {
-          errorMessage = "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
+          errorMessage =
+            "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
         } else {
-          errorMessage = error.message || "Terjadi kesalahan yang tidak diketahui";
+          errorMessage =
+            error.message || "Terjadi kesalahan yang tidak diketahui";
         }
       } catch (e) {
         errorMessage = "Terjadi kesalahan dalam memproses response error";
@@ -55,21 +64,50 @@ export default function DaftarKlinik() {
     },
   });
 
+  const getAddressFromCoordinates = async (latitude, longitude) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=id`
+      );
+      const data = await response.json();
+
+      if (data.display_name) {
+        const addressParts = data.address;
+        const relevantAddress = [
+          addressParts.suburb,
+          addressParts.city_district,
+          addressParts.city,
+        ]
+          .filter(Boolean)
+          .join(", ");
+
+        setUserAddress(relevantAddress);
+      }
+    } catch (error) {
+      console.error("Error getting address:", error);
+    }
+  };
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ latitude, longitude });
+          getAddressFromCoordinates(latitude, longitude);
         },
         (error) => {
           console.error("Error getting user location:", error);
-          setLocationError("Failed to get your location. Distances won't be shown.");
+          setLocationError(
+            "Failed to get your location. Distances won't be shown."
+          );
           setUserLocation(null);
         }
       );
     } else {
-      setLocationError("Geolocation is not supported by your browser. Distances won't be shown.");
+      setLocationError(
+        "Geolocation is not supported by your browser. Distances won't be shown."
+      );
       setUserLocation(null);
     }
   }, []);
@@ -145,21 +183,24 @@ export default function DaftarKlinik() {
   return (
     <div className="px-4 sm:px-10">
       {locationError && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <div
+          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
+          role="alert"
+        >
           <p>{locationError}</p>
         </div>
       )}
-      
+
       <div className="mt-15 px-4 max-w-lg mx-auto w-full">
         <div className="flex items-center gap-2 text-gray-600 mb-4">
           <div className="p-1">📍</div>
-          <span>HCM9+RWW, Umban Sari</span>
+          <span>{userAddress}</span>
         </div>
 
         {/* Faskes List */}
         <div className="space-y-4">
           {clinics.map((clinic) => (
-            <div 
+            <div
               key={clinic.id}
               className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer"
               onClick={() => handleLogoClick(clinic.id)}
@@ -173,10 +214,16 @@ export default function DaftarKlinik() {
                   />
                 </div>
                 <div className="ml-4 flex-1">
-                  <h3 className="font-medium text-gray-900">{clinic.nama_faskes}</h3>
+                  <h3 className="font-medium text-gray-900">
+                    {clinic.nama_faskes}
+                  </h3>
                   <div className="flex items-center gap-1 mt-2 text-gray-500 text-sm">
                     <span>📍</span>
-                    <span>{clinic.distance ? `${clinic.distance.toFixed(2)} km` : 'Jarak tidak tersedia'}</span>
+                    <span>
+                      {clinic.distance
+                        ? `${clinic.distance.toFixed(2)} km`
+                        : " "}
+                    </span>
                   </div>
                 </div>
               </div>
