@@ -81,7 +81,7 @@ export default function Example() {
                 <div className="w-1/4"></div>
               </div>
             </section>
-            <section className="me-1.5">
+            <section className="m-15">
               <Search
                 onChange={(e) => setSearch(e.target.value)}
                 value={search}
