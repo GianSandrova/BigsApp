@@ -235,7 +235,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                             )}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-blue-500 hover:underline"
+                            className="flex items-center gap-1 text-gray-700 hover:underline"
                           >
                             {`${clinic.distance.toFixed(2)} km`}
                           </Link>
