@@ -228,14 +228,14 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                         <MapPin size={12} />
                         {clinic.distance ? (
                           <Link
-                            href={handleGoogleMapsLink(
-                              clinic.latitude,
-                              clinic.longitude
-                            )}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-blue-500 hover:underline"
-                          >
+                          href={handleGoogleMapsLink(clinic.latitude, clinic.longitude)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-blue-500 hover:underline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.open(handleGoogleMapsLink(clinic.latitude, clinic.longitude), '_blank');
+                          }}
                             {`${clinic.distance.toFixed(2)} km`}
                             <ExternalLink size={10} />
                           </Link>
