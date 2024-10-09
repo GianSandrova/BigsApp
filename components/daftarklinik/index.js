@@ -246,7 +246,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                     </div>
                     <button
                       onClick={() => handleSelectClinic(clinic.id)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                      className="px-4 py-2 bg-blue-500 text-white text-base rounded-md hover:bg-blue-600 transition duration-300"
                       disabled={isLoggingIn}
                     >
                       {isLoggingIn ? "Memilih..." : "Pilih"}
