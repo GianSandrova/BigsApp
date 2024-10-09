@@ -187,7 +187,7 @@ export default function DaftarKlinik({ searchQuery = "" }) {
       });
     }
   };
-  
+
   const handleGoogleMapsLink = (latitude, longitude) => {
     return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
   };
@@ -228,14 +228,14 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                         <MapPin size={12} />
                         {clinic.distance ? (
                           <Link
-                          href={handleGoogleMapsLink(clinic.latitude, clinic.longitude)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-blue-500 hover:underline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            window.open(handleGoogleMapsLink(clinic.latitude, clinic.longitude), '_blank');
-                          }}
+                            href={handleGoogleMapsLink(
+                              clinic.latitude,
+                              clinic.longitude
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-blue-500 hover:underline"
+                          >
                             {`${clinic.distance.toFixed(2)} km`}
                             <ExternalLink size={10} />
                           </Link>
