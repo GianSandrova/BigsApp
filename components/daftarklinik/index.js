@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
 import { toast } from "sonner";
 import { MapPin, ExternalLink } from "lucide-react";
-import {Link} from "next/link"
+import {Link} from "@nextui-org/react"
 
 export default function DaftarKlinik({ searchQuery = "" }) {
   const { data, isLoading, error } = useGetAllFaskes();
