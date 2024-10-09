@@ -5,7 +5,6 @@ export const PEMILIK = {
 
 export const JENIS_VALIDASI = {
     NIK: 'NIK',
-    no_rekam_medis: 'No. Rekam Medis',
 }
 
 

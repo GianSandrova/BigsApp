@@ -4,7 +4,7 @@ import { useGetAllFaskes } from "@/service/klinik.service";
 import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
 import { toast } from "sonner";
-import { MapPin, ExternalLink } from "lucide-react";
+import { MapPin} from "lucide-react";
 import {Link} from "@nextui-org/react"
 
 export default function DaftarKlinik({ searchQuery = "" }) {
@@ -238,7 +238,6 @@ export default function DaftarKlinik({ searchQuery = "" }) {
                             className="flex items-center gap-1 text-blue-500 hover:underline"
                           >
                             {`${clinic.distance.toFixed(2)} km`}
-                            <ExternalLink size={10} />
                           </Link>
                         ) : (
                           <span>Jarak tidak tersedia</span>
