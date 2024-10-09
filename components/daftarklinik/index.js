@@ -4,7 +4,8 @@ import { useGetAllFaskes } from "@/service/klinik.service";
 import { useRouter } from "next/navigation";
 import { useKlinikLogin } from "@/service/auth.service";
 import { toast } from "sonner";
-import { MapPin } from "lucide-react";
+import { MapPin, ExternalLink } from "lucide-react";
+import {Link} from "next/link"
 
 export default function DaftarKlinik({ searchQuery = "" }) {
   const { data, isLoading, error } = useGetAllFaskes();
