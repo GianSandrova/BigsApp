@@ -13,6 +13,7 @@ import DaftarKlinik from "@/components/daftarklinik";
 import { useGetAllFaskes } from "@/service/klinik.service";
 import { useAuthToken } from "@/hooks/useAuthToken";
 import { Search } from "@/components/search";
+import { LoadingPage } from "@/components/loading";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -61,7 +62,7 @@ export default function Example() {
     }
   }
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingPage />;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
